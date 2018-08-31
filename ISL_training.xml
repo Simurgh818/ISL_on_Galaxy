@@ -11,11 +11,11 @@ ISL_training.py $DatasetTrainPath $CheckpointPath $OutputPath $outfile
 <inputs>
 
 
-<param name="DatasetTrainPath" type="text" format="text" label="Specify path for the dataset, where the images to be analyzed are at." value="/home/sinadabiri/Testing-In-Silico-Labeling/data_sample/condition_e_sample_B2" help="Note that /your_folders/data_sample." size="70" />
+<param name="DatasetTrainPath" type="text" format="text" label="Specify path for the dataset, where the images to be analyzed are at." value="/mnt/finkbeinernas/robodata/Sina/data_sample/condition_e_sample_B2" help="Note that /mnt/finkbeinernas/robodata/Sina/data_sample/condition_e_sample_B2." size="70" />
 
 <param name="CheckpointPath" type="text" format="text" label="Specify path for the checkpoints, where the Training model checkpoints are at." value="/home/sinadabiri/Testing-In-Silico-Labeling/in-silico-labeling/isl/checkpoints" help="Note that /home/sinadabiri/Testing-In-Silico-Labeling/in-silico-labeling/isl/checkpoints .For example: /home/sinadabiri/Testing-In-Silico-Labeling/in-silico-labeling/isl/checkpoints" size="70" />
 
-<param name="OutputPath" type="text" format="text" label="Specify path for the output, where the predicted images will be saved at." value="/mnt/finkbeinernas/robodata/Sina" help="Note that /your_folders/in-silico-labeling-master/isl/data_sample .For example: /mnt/finkbeinernas/robodata/Sina" size="70" />
+<param name="OutputPath" type="text" format="text" label="Specify path for the output, where the predicted images will be saved at." help="For example: /mnt/finkbeinernas/robodata/Sina" size="70" />
 
 </inputs>
 

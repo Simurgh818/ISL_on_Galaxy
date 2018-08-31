@@ -5,7 +5,7 @@
 <command interpreter="python">
 <!-- <command interpreter="bash"> -->
 
-ISL_testing.py $CropSize $Model $OutputPath $DatasetEvalPath $InferChannels $ErrorPanels $ImageFolder 
+ISL_testing.py $CropSize $Model $OutputPath $DatasetEvalPath $InferChannels $ErrorPanels
 </command>
 
 <inputs>
@@ -32,12 +32,6 @@ ISL_testing.py $CropSize $Model $OutputPath $DatasetEvalPath $InferChannels $Err
 <param name="ErrorPanels" type="select" format="text" label="Select wheter to simplify errror panels or not" help="For new images (not seen by algorithm) choose noinfer simplify error panels, otherwise chose Not simplify.">
 	<option value="Simplify" selected="true">Simplify</option>
     <option value="noinfer_simplify_error_panels">noinfer_simplify_error_panels</option>
-</param>
-
-<param name="ImageFolder" type="select" format="text" label="Select Image Folder" help="This is to name the txt files being generated for output and error from terminal.">
-    <option value="condition_b_sample" selected="true">condition_b_sample</option>
-    <option value="condition_e_sample_B2">condition_e_sample_B2</option>
-    <option value="condition_e_sample_B3">condition_e_sample_B3</option>
 </param>
 
 
