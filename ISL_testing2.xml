@@ -1,0 +1,43 @@
+<tool id="unix_command_2" name="In-Silico Labeling" version="0.01">
+
+<description>This interface sends Unix commands to run In-Silico Labeling TensorFlow program (Christiansen et al 2018).</description>
+
+<command>
+<!-- <command interpreter="bash"> -->
+export $BASE_DIRECTORY=/home/sinadabiri/venvs/in-silico-labeling-master/isl;
+
+bazel run isl:launch -- \
+  --alsologtostderr \
+  --base_directory $BASE_DIRECTORY \
+  --mode EVAL_EVAL \
+  --metric INFER_FULL \
+  --stitch_crop_size 375 \
+  --restore_directory $BASE_DIRECTORY/checkpoints \
+  --read_pngs \
+  --dataset_eval_directory $BASE_DIRECTORY/data_sample/condition_e_sample_B2 \
+  --infer_channel_whitelist DAPI_CONFOCAL,CELLMASK_CONFOCAL \
+  --noinfer_simplify_error_panels \
+    > testing_output_postTrainedModel_newDataSet_8-15-18_375crop_B2images.txt \
+    2> testing_error_postTrainedModel_newDataSet_8-15-18_375crop_B2images.txt
+
+</command>
+
+<!-- <inputs>
+<param name="BASE_DIRECTORY" type="text" format="text" label="Specify path for the  BASE_DIRECTORY, where the isl subfolder is. For example: /home/sinadabiri/venvs/in-silico-labeling-master/isl"/>
+<param name="qc_path" type="text" format="text" value="/finkbeiner/imaging/smb-robodata/your_folders/QualityControl" size="70" label="Enter path to output background quality control images. Example: QualityControl" help="Note that RoboData/your_folders = /finkbeiner/imaging/smb-robodata/your_folders"/>
+<param name="background_removal_type" type="select" label="Select removal type" help="Division tends to smb-robodata better visually for montage. Choose subtraction for quantitavie pixel analysis downstream. The generated background image is a median image of all panels in the well. When negative values arise in subtraction, they are set to zero.">
+            <option value="division" selected="true"  >Division</option>
+            <option value="subtraction"               >Subtraction</option>
+</param>
+</inputs>
+
+<outputs>
+<data name="BASE_DIRECTORY" type="text" format="text" label="unix_ex_ouput"/>
+</outputs> -->
+
+
+<help>
+Sends a unix command to prompt.
+</help>
+
+</tool>

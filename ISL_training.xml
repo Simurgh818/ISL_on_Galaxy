@@ -1,0 +1,32 @@
+<tool id="In_Silico_Labeling_Training" name="In-Silico Labeling - Training" version="0.02">
+
+<description> This one is for Training.</description>
+
+<command interpreter="python">
+<!-- <command interpreter="bash"> -->
+
+ISL_training.py $DatasetTrainPath $CheckpointPath $OutputPath $outfile
+</command>
+
+<inputs>
+
+
+<param name="DatasetTrainPath" type="text" format="text" label="Specify path for the dataset, where the images to be analyzed are at." value="/home/sinadabiri/Testing-In-Silico-Labeling/data_sample/condition_e_sample_B2" help="Note that /your_folders/data_sample." size="70" />
+
+<param name="CheckpointPath" type="text" format="text" label="Specify path for the checkpoints, where the Training model checkpoints are at." value="/home/sinadabiri/Testing-In-Silico-Labeling/in-silico-labeling/isl/checkpoints" help="Note that /home/sinadabiri/Testing-In-Silico-Labeling/in-silico-labeling/isl/checkpoints .For example: /home/sinadabiri/Testing-In-Silico-Labeling/in-silico-labeling/isl/checkpoints" size="70" />
+
+<param name="OutputPath" type="text" format="text" label="Specify path for the output, where the predicted images will be saved at." value="/mnt/finkbeinernas/robodata/Sina" help="Note that /your_folders/in-silico-labeling-master/isl/data_sample .For example: /mnt/finkbeinernas/robodata/Sina" size="70" />
+
+</inputs>
+
+<outputs>
+<data name="outfile" type="data" format="data" label="ISL_ouput"/>
+</outputs>
+
+
+<help>
+Exports the Base Directory, and then Runs the prediction for the image folder.
+</help>
+
+</tool>
+

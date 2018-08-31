@@ -1,0 +1,56 @@
+<tool id="In_Silico_Labeling_Testing" name="In-Silico Labeling - Testing" version="0.02">
+
+<description>This interface sends Unix commands to run In-Silico Labeling TensorFlow program (Christiansen et al 2018). There are two modes: Testing and Training. This one is for Testing.</description>
+
+<command interpreter="python">
+<!-- <command interpreter="bash"> -->
+
+ISL_testing.py $CropSize $Model $OutputPath $DatasetEvalPath $InferChannels $ErrorPanels $ImageFolder 
+</command>
+
+<inputs>
+
+<param name="CropSize" type="text" label="Select Crop Size between 285 and 1500." help="The default value is 1500. Though one can chose smaller value like 375 for faster processing." value = "285" />
+
+
+<param name="Model" type="select" format="text" label="Select which model you like" help="The default value is pre-trained model.">
+    <option value="Pre-trained" selected="true">Pre-trained</option>
+    <option value="Post-trained">Post-trained</option>
+</param>
+
+<param name="OutputPath" type="text" format="text" label="Specify path for the output, where the predicted images will be saved at." help="Note that /your_folders/in-silico-labeling-master/isl/data_sample .For example: /mnt/finkbeinernas/robodata/Sina" size="70" />
+
+<param name="DatasetEvalPath" type="text" format="text" label="Specify path for the dataset, where the images to be analyzed are at." value="/mnt/finkbeinernas/robodata/Sina/data_sample/condition_b_sample" help="Note that /your_folders/in-silico-labeling-master/isl/data_sample .For example: /mnt/finkbeinernas/robodata/Sina/data_sample/condition_b_sample" size="70" />
+
+<!-- ,DEAD_CONFOCAL -->
+<param name="InferChannels" type="select" format="text" label="Specify Inference Channels" help="If images are confocal for survival tracking choose DAPI_CONFOCAL,CELLMASK_CONFOCAL,DEAD_CONFOCAL or for all other uses choose DAPI_CONFOCAL, MAP2_CONFOCAL,NFH_CONFOCAL. But if images are widefield choose DAPI_WIDEFIELD, TUJ1_WIDEFIELD, ISLET_WIDEFIELD">
+    <option value="DAPI_CONFOCAL,MAP2_CONFOCAL,NFH_CONFOCAL" selected="true">DAPI_CONFOCAL,MAP2_CONFOCAL,NFH_CONFOCAL</option>
+    <option value="DAPI_CONFOCAL,CELLMASK_CONFOCAL" >DAPI_CONFOCAL,CELLMASK_CONFOCAL</option>
+    <option value="DAPI_WIDEFIELD,TUJ1_WIDEFIELD,ISLET_WIDEFIELD">DAPI_WIDEFIELD,TUJ1_WIDEFIELD, ISLET_WIDEFIELD</option>
+</param>
+
+<param name="ErrorPanels" type="select" format="text" label="Select wheter to simplify errror panels or not" help="For new images (not seen by algorithm) choose noinfer simplify error panels, otherwise chose Not simplify.">
+	<option value="Simplify" selected="true">Simplify</option>
+    <option value="noinfer_simplify_error_panels">noinfer_simplify_error_panels</option>
+</param>
+
+<param name="ImageFolder" type="select" format="text" label="Select Image Folder" help="This is to name the txt files being generated for output and error from terminal.">
+    <option value="condition_b_sample" selected="true">condition_b_sample</option>
+    <option value="condition_e_sample_B2">condition_e_sample_B2</option>
+    <option value="condition_e_sample_B3">condition_e_sample_B3</option>
+</param>
+
+
+</inputs>
+
+<outputs>
+<data name="outfile" type="data" format="data" label="ISL_ouput"/>
+</outputs>
+
+
+<help>
+Exports the Base Directory, and then Runs the prediction for the image folder.
+</help>
+
+</tool>
+
