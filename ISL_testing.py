@@ -5,41 +5,39 @@ import datetime
 
 DatasetEvalDir = ' '
 OutputDir = ' '
-BaseDir = ' '
-BazCmd = ' '
+
 
 def main():
 
 	# ~/venvs/tensorflow/SinaFlow/bin/activate
-	VirtualEnvPathActive = 'source ~/venvs/tensorflow/SinaFlow/bin/activate | '
+	VirtualEnvPathActive = 'source ~/venvs/tensorflow/SinaFlow/bin/activate; '
 	
 	# /home/sinadabiri/venvs/in-silico-labeling-master
-	BaseDirectoryPath = 'cd /home/sinadabiri/venvs/in-silico-labeling-master; bazel shutdown | '
+	BaseDirectoryPath = 'cd /home/sinadabiri/venvs/in-silico-labeling-master; bazel shutdown; '
 
 	# BazCmd1 = ['bazel']
 	# BazCmd1.append (' shutdown')
 
 	# BaseDir = ['export']
 	# BaseDir.append (' BASE_DIRECTORY=/mnt/finkbeinernas/robodata/Sina/in-silico-labeling/isl')
-	BaseDir = 'export BASE_DIRECTORY=/mnt/finkbeinernas/robodata/Sina/in-silico-labeling/isl | '
+	BaseDir = 'export BASE_DIRECTORY=/mnt/finkbeinernas/robodata/Sina/in-silico-labeling/isl; '
 	
 	# VirtualEnvPathActive.append ('cd /home/sinadabiri/venvs/in-silico-labeling-master; bazel shutdown;')
 	# VirtualEnvPathActive.append ('export BASE_DIRECTORY=/mnt/finkbeinernas/robodata/Sina/in-silico-labeling/isl;')
 
 	# VirtualEnvPathActive.append ('bazel run isl:launch-- \
-	BazCmd = [BaseDirectoryPath + VirtualEnvPathActive + BaseDir + 'bazel run isl:launch-- \
+	BazCmd = [VirtualEnvPathActive + BaseDirectoryPath + BaseDir + 'bazel run isl:launch -- \
 	  --alsologtostderr \
 	  --base_directory $BASE_DIRECTORY \
 	  --mode EVAL_EVAL \
 	  --metric INFER_FULL \
-	  --stitch_crop_size '+ ImageCropSize + Modeltype +' \
+	  --stitch_crop_size '+ ImageCropSize + ' ' + Modeltype +' \
 	  --output_directory '+ OutputDir + ' \
 	  --read_pngs \
 	  --dataset_eval_directory ' + DatasetEvalDir + '  \
 	  --infer_channel_whitelist ' + InferChan + ' \
-	  ' + ErrPanels + '\
-    > ' + OutputDir + '/testing_output_'+ Mod + '_'+ Date +'_'+ ImageCropSize +'_condition_b_sample_images.txt \
-    2> ' + OutputDir + '/testing_error_'+ Mod + '_'+ Date +'_'+ ImageCropSize +'_condition_b_sample_images.txt']
+	  > ' + OutputDir + '/testing_output_'+ Mod + '_'+ Date +'_'+ ImageCropSize +'_condition_b_sample_images.txt \
+    2> ' + OutputDir + '/testing_error_'+ Mod + '_'+ Date +'_'+ ImageCropSize +'_condition_b_sample_images.txt;' + BaseDirectoryPath]
 	
 	
 	 
@@ -49,7 +47,7 @@ def main():
 	process.wait()
 	output = process.communicate()[0]
 
-	return 
+	return output
 
 
 if __name__ == '__main__':
@@ -61,8 +59,6 @@ if __name__ == '__main__':
 	parser.add_argument("OutputPath", help="Output Image Folder location.")
 	parser.add_argument("DatasetEvalPath", help="Folder path to images directory.")
 	parser.add_argument("InferChannels", help="Channel Inferences.")
-	parser.add_argument("ErrorPanels", help="Error Panels.")
-
 
 	args = parser.parse_args()
 
@@ -74,18 +70,12 @@ if __name__ == '__main__':
 	OutputDir = args.OutputPath
 	DatasetEvalDir = args.DatasetEvalPath
 	InferChan = args.InferChannels
-	ErrPanels = args.ErrorPanels
 
 	if Modeltype == 'Pre-trained':
 		Modeltype = '--restore_directory /home/sinadabiri/venvs/in-silico-labeling-master/isl/checkpoints'
 	else:
 		Modeltype = ' '
 	
-	if ErrPanels == 'noinfer_simplify_error_panels':
-		ErrPanels = '--noinfer_simplify_error_panels'
-	else:
-		ErrPanels = ' '
- 
 	# ----Confirm given folders exist--
 
 	assert os.path.exists(DatasetEvalDir), 'Confirm the given path for images directory exists.'

@@ -5,7 +5,7 @@
 <command interpreter="python">
 <!-- <command interpreter="bash"> -->
 
-ISL_testing.py $CropSize $Model $OutputPath $DatasetEvalPath $InferChannels $ErrorPanels
+ISL_testing.py $CropSize $Model $OutputPath $DatasetEvalPath $InferChannels 
 </command>
 
 <inputs>
@@ -29,10 +29,7 @@ ISL_testing.py $CropSize $Model $OutputPath $DatasetEvalPath $InferChannels $Err
     <option value="DAPI_WIDEFIELD,TUJ1_WIDEFIELD,ISLET_WIDEFIELD">DAPI_WIDEFIELD,TUJ1_WIDEFIELD, ISLET_WIDEFIELD</option>
 </param>
 
-<param name="ErrorPanels" type="select" format="text" label="Select wheter to simplify errror panels or not" help="For new images (not seen by algorithm) choose noinfer simplify error panels, otherwise chose Not simplify.">
-	<option value="Simplify" selected="true">Simplify</option>
-    <option value="noinfer_simplify_error_panels">noinfer_simplify_error_panels</option>
-</param>
+
 
 
 </inputs>
