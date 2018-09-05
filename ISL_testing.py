@@ -1,7 +1,8 @@
 import subprocess
 import argparse
 import sys, os
-import datetime
+from datetime import datetime
+from time import strftime
 
 DatasetEvalDir = ' '
 OutputDir = ' '
@@ -13,18 +14,14 @@ def main():
 	VirtualEnvPathActive = 'source ~/venvs/tensorflow/SinaFlow/bin/activate; '
 	
 	# /home/sinadabiri/venvs/in-silico-labeling-master
-	BaseDirectoryPath = 'cd /home/sinadabiri/venvs/in-silico-labeling-master; bazel shutdown; '
+	BaseDirectoryPath = 'cd /home/sinadabiri/venvs/in-silico-labeling-master; '
+	
+	cmd1 = [BaseDirectoryPath + 'bazel shutdown;']
+	process1 = subprocess.Popen(cmd1, shell=True, stdout=subprocess.PIPE)
+	process1.wait()
 
-	# BazCmd1 = ['bazel']
-	# BazCmd1.append (' shutdown')
-
-	# BaseDir = ['export']
-	# BaseDir.append (' BASE_DIRECTORY=/mnt/finkbeinernas/robodata/Sina/in-silico-labeling/isl')
 	BaseDir = 'export BASE_DIRECTORY=/mnt/finkbeinernas/robodata/Sina/in-silico-labeling/isl; '
 	
-	# VirtualEnvPathActive.append ('cd /home/sinadabiri/venvs/in-silico-labeling-master; bazel shutdown;')
-	# VirtualEnvPathActive.append ('export BASE_DIRECTORY=/mnt/finkbeinernas/robodata/Sina/in-silico-labeling/isl;')
-
 	# VirtualEnvPathActive.append ('bazel run isl:launch-- \
 	BazCmd = [VirtualEnvPathActive + BaseDirectoryPath + BaseDir + 'bazel run isl:launch -- \
 	  --alsologtostderr \
@@ -36,18 +33,20 @@ def main():
 	  --read_pngs \
 	  --dataset_eval_directory ' + DatasetEvalDir + '  \
 	  --infer_channel_whitelist ' + InferChan + ' \
-	  > ' + OutputDir + '/testing_output_'+ Mod + '_'+ Date +'_'+ ImageCropSize +'_condition_b_sample_images.txt \
-    2> ' + OutputDir + '/testing_error_'+ Mod + '_'+ Date +'_'+ ImageCropSize +'_condition_b_sample_images.txt;' + BaseDirectoryPath]
+	  > ' + OutputDir + '/testing_output_'+ Mod + '_'+ DateTime +'_'+ ImageCropSize +'_condition_b_sample_images.txt \
+    2> ' + OutputDir + '/testing_error_'+ Mod + '_'+ DateTime +'_'+ ImageCropSize +'_condition_b_sample_images.txt;']
 	
-	
-	 
+		 
 	# cmd = [VirtualEnvPathActive,BaseDirectoryPath, BaseDir, BazCmd2]
 	print (BazCmd)
 	process = subprocess.Popen(BazCmd, shell=True, stdout=subprocess.PIPE)
 	process.wait()
 	output = process.communicate()[0]
 
-	return output
+	cmd3 = [BaseDirectoryPath + 'bazel shutdown;']
+	process3 = subprocess.Popen(cmd3, shell=True, stdout=subprocess.PIPE)
+	process3.wait()
+	return 
 
 
 if __name__ == '__main__':
@@ -81,7 +80,7 @@ if __name__ == '__main__':
 	assert os.path.exists(DatasetEvalDir), 'Confirm the given path for images directory exists.'
 	assert os.path.exists(OutputDir), 'Confirm the given path for output images directory exists.'
 
-	Date = str(datetime.date.today())
+	DateTime = datetime.now().strftime("%m-%d-%Y_%H:%M")
 
 	print ('\n The Evaluation Directory is:')
 	print (DatasetEvalDir)
