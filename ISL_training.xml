@@ -15,7 +15,7 @@ ISL_training.py $DatasetTrainPath $CheckpointPath $OutputPath $TillStep $outfile
 
 <param name="CheckpointPath" type="text" format="text" label="Specify path for the checkpoints, where the Training model checkpoints are at." value="/mnt/finkbeinernas/robodata/Sina/checkpoints" help="For example: /mnt/finkbeinernas/robodata/Sina/checkpoints" size="70" />
 
-<param name="OutputPath" type="text" format="text" label="Specify path for the output, where the predicted images will be saved at." value = "/mnt/finkbeinernas/robodata/Sina" size="70" />
+<param name="OutputPath" type="text" format="text" label="Specify path for the output, where the predicted images will be saved at." help = "For example: /mnt/finkbeinernas/robodata/Sina" size="70" />
 
 <param name="TillStep" type="text" format ="text" label="Specify the final step of training you want the training to go on." value = "285" help="It will train for an additional steps till it reaches the number you specify!" size="70" />
 

@@ -36,9 +36,6 @@ def main():
 	  > ' + OutputDir + '/testing_output_'+ Mod + '_'+ DateTime +'_'+ ImageCropSize +'_condition_b_sample_images.txt \
     2> ' + OutputDir + '/testing_error_'+ Mod + '_'+ DateTime +'_'+ ImageCropSize +'_condition_b_sample_images.txt;']
 	
-		 
-	# cmd = [VirtualEnvPathActive,BaseDirectoryPath, BaseDir, BazCmd2]
-	print (BazCmd)
 	process = subprocess.Popen(BazCmd, shell=True, stdout=subprocess.PIPE)
 	process.wait()
 	output = process.communicate()[0]
