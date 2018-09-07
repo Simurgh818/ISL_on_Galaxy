@@ -466,7 +466,7 @@ def train(gitapp: controller.GetInputTargetAndPredictedParameters):
         logdir=output_directory(),
         master=FLAGS.master,
         is_chief=FLAGS.task == 0,
-        number_of_steps=FLAGS.UntilStep,
+        number_of_steps=FLAGS.until_step,
         save_summaries_secs=FLAGS.save_summaries_secs,
         save_interval_secs=FLAGS.save_interval_secs,
         init_fn=init_fn,
