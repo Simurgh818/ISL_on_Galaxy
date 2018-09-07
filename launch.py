@@ -14,7 +14,7 @@
 # ==============================================================================
 
 # pylint: disable=line-too-long
-r"""Binary for training and evaluating a model."""
+"""Binary for training and evaluating a model."""
 # pylint: enable=line-too-long
 from __future__ import absolute_import
 from __future__ import division
@@ -62,6 +62,10 @@ flags.DEFINE_string('master', 'local',
                     'BNS name of the TensorFlow master to use.')
 flags.DEFINE_string('base_directory', '/tmp/minception/',
                     'Directory where model checkpoints are written.')
+
+flags.DEFINE_string('output_path', '/tmp/output_path/',
+                    'Directory where model outputs are written.')
+
 flags.DEFINE_string('export_directory', '/tmp/minception_export/',
                     'Directory where exported model is written.')
 flags.DEFINE_integer(
@@ -99,6 +103,9 @@ flags.DEFINE_float('learning_rate', 1e-4, 'The learning rate.')
 flags.DEFINE_integer(
     'learning_decay_steps', 1 << 12,
     'The learning decay steps, used by the MOMENTUM optimizer.')
+
+flags.DEFINE_integer('until_step', None,
+  'The training will go on till the step mentinoed.')
 
 flags.DEFINE_bool(
     'read_pngs', False,
@@ -362,7 +369,7 @@ def parameters() -> controller.GetInputTargetAndPredictedParameters:
 
 def train_directory() -> str:
   """The directory where the training data is written."""
-  return os.path.join(FLAGS.base_directory, 'train')
+  return os.path.join(FLAGS.output_path, 'train')
 
 
 def output_directory() -> str:
@@ -384,7 +391,7 @@ def output_directory() -> str:
     else:
       suffix = 'stitch'
 
-    return os.path.join(FLAGS.base_directory, prefix + suffix)
+    return os.path.join(FLAGS.output_path, prefix + suffix)
 
 
 def total_loss(
@@ -459,8 +466,7 @@ def train(gitapp: controller.GetInputTargetAndPredictedParameters):
         logdir=output_directory(),
         master=FLAGS.master,
         is_chief=FLAGS.task == 0,
-        # global_step=None,
-        number_of_steps=250,
+        number_of_steps=FLAGS.UntilStep,
         save_summaries_secs=FLAGS.save_summaries_secs,
         save_interval_secs=FLAGS.save_interval_secs,
         init_fn=init_fn,
