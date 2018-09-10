@@ -2,10 +2,10 @@
 
 <description>This interface sends Unix commands to run In-Silico Labeling TensorFlow program (Christiansen et al 2018). There are two modes: Predicting and Training. This one is for Predicting.</description>
 
-<command interpreter="python">
+<command>
 <!-- <command interpreter="bash"> -->
 
-ISL_predicting.py $crop_size $model $output_path $dataset_eval_path $infer_channels 
+source ~/venvs/tensorflow/SinaFlow/bin/activate; python3.6 /home/sinadabiri/galaxy-new2/galaxy/tools/dev_staging_modules/ISL_predicting.py $crop_size $model $output_path $dataset_eval_path $infer_channels 
 </command>
 
 <inputs>
@@ -13,10 +13,8 @@ ISL_predicting.py $crop_size $model $output_path $dataset_eval_path $infer_chann
 <param name="crop_size" type="text" label="Select Crop Size between 285 and 1500." help="The default value is 1500. Though one can chose smaller value like 375 for faster processing." value = "375" />
 
 
-<param name="model" type="select" format="text" label="Select which model you like" help="The default value is pre-trained model.">
-    <option value="Pre-trained" selected="true">Pre-trained</option>
-    <option value="Post-trained">Post-trained</option>
-</param>
+<param name="model" type="text" format="text" label="Select which model you like" value = "/home/sinadabiri/venvs/in-silico-labeling-master/isl/checkpoints" help="The default value is ISL model: /home/sinadabiri/venvs/in-silico-labeling-master/isl/checkpoints. If left blank it will train a new model!"/>
+
 
 <param name="output_path" type="text" format="text" label="Specify path for the output, where the predicted images will be saved at." help="Note that /your_folders/in-silico-labeling-master/isl/data_sample .For example: /mnt/finkbeinernas/robodata/Sina" size="70" />
 

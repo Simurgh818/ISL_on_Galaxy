@@ -11,7 +11,7 @@ output_dir = ' '
 def main():
 
 	# ~/venvs/tensorflow/SinaFlow/bin/activate
-	virtual_env_path_active = 'source ~/venvs/tensorflow/SinaFlow/bin/activate;  '
+	# virtual_env_path_active = 'source ~/venvs/tensorflow/SinaFlow/bin/activate;  '
 	
 	# /home/sinadabiri/venvs/in-silico-labeling-master
 	base_directory_path = 'cd /home/sinadabiri/venvs/in-silico-labeling-master; '
@@ -63,15 +63,16 @@ if __name__ == '__main__':
 
 	image_crop_size = args.crop_size
 	model_type = args.model
-	mod = args.model
 	output_dir = args.output_path
 	dataset_eval_dir = args.dataset_eval_path
 	infer_chan = args.infer_channels
 
-	if model_type == 'Pre-trained':
+	if model_type != '':
 		model_type = '--restore_directory /home/sinadabiri/venvs/in-silico-labeling-master/isl/checkpoints'
+		mod = 'ISL-Model'
 	else:
-		model_type = ' '
+		model_type = ''
+		mod = 'Your-Model'
 	
 	# ----Confirm given folders exist--
 

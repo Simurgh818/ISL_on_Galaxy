@@ -8,7 +8,8 @@ from time import strftime
 def main():
 
 	# ~/venvs/tensorflow/SinaFlow/bin/activate
-	virtual_env_path_active = 'source ~/venvs/tensorflow/SinaFlow/bin/activate;'
+	# virtual_env_path_active = 'source ~/venvs/tensorflow/SinaFlow/bin/activate;'
+
 	# /home/sinadabiri/venvs/in-silico-labeling-master
 	base_directory_path = 'cd /home/sinadabiri/venvs/in-silico-labeling-master; '
 	
