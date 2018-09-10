@@ -1,0 +1,69 @@
+<tool id="unix_command" name="In-Silico Labeling" version="0.01">
+
+<description>This interface sends Unix commands to run In-Silico Labeling TensorFlow program (Christiansen et al 2018).</description>
+
+<command>
+<!-- <command interpreter="bash"> -->
+export $BASE_DIRECTORY
+</command>
+
+<inputs>
+<param name="BASE_DIRECTORY" type="text" format="text" label="Specify path for the  BASE_DIRECTORY, where the isl subfolder is. For example: /home/sinadabiri/venvs/in-silico-labeling-master/isl"/>
+</inputs>
+
+<outputs>
+<data name="BASE_DIRECTORY" type="text" format="text" label="unix_ex_ouput"/>
+</outputs>
+
+<IF>
+    <CONDITIONS>
+        <CONDITION field="Training?" from="yes" to="no"></CONDITION>
+    </CONDITIONS>
+	    <RESULTS>
+	    	<inputs>
+			<param name="restore_directory" type="text" format="text" label="Specify path for the restore_directory, where the checkpoints subfolder is. For example: $BASE_DIRECTORY/checkpoints"/>
+			</inputs>
+
+			<outputs>
+			<data name="RestoreDirectory" type="text" format="text" label="unix_ex_ouput"/>
+			</outputs>
+
+	    	<inputs>
+			<param name="dataset_train_directory" type="text" format="text" label="Specify path for the dataset_train_directory, where the image folder is. For example: $BASE_DIRECTORY/data_sample/condition_e_sample_B2"/>
+			</inputs>
+
+			<outputs>
+			<data name="DatasetTrainDirectory" type="text" format="text" label="unix_ex_ouput"/>
+			</outputs>
+
+
+	    	<command>
+			<!-- <command interpreter="bash"> -->
+				bazel run isl:launch -- \
+				  --alsologtostderr \
+				  --base_directory $BASE_DIRECTORY \
+				  --mode TRAIN \
+				  --metric LOSS \
+				  --master "" \
+				  --restore_directory $BASE_DIRECTORY/checkpoints \
+				  --read_pngs \
+				  --dataset_train_directory $BASE_DIRECTORY/data_sample/condition_e_sample_B2  \
+				    > testing_output_Training_8-8-18_375crop_16image.txt \
+				    2> testing_error_Training_8-8-18_375crop_16image.txt
+			</command>
+
+
+		</RESULTS>
+    <ELSE>
+        <RESULTS>
+        	
+        	
+        </RESULTS>        
+    </ELSE>
+</IF>
+
+<help>
+Sends a unix command to prompt.
+</help>
+
+</tool>

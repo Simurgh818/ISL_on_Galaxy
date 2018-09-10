@@ -5,19 +5,19 @@
 <command interpreter="python">
 <!-- <command interpreter="bash"> -->
 
-ISL_training.py $DatasetTrainPath $CheckpointPath $OutputPath $TillStep $outfile
+ISL_training.py $dataset_train_path $checkpoint_path $output_path $till_step $outfile
 </command>
 
 <inputs>
 
 
-<param name="DatasetTrainPath" type="text" format="text" label="Specify path for the dataset, where the images to be analyzed are at." value="/mnt/finkbeinernas/robodata/Sina/data_sample/condition_e_sample_B2" help="Note that /mnt/finkbeinernas/robodata/Sina/data_sample/condition_e_sample_B2." size="70" />
+<param name="dataset_train_path" type="text" format="text" label="Specify path for the dataset, where the images to be analyzed are at." value="/home/sinadabiri/Testing-In-Silico-Labeling/data_sample/condition_e_sample_B2" help="Note that /your_folders/data_sample." size="70" />
 
-<param name="CheckpointPath" type="text" format="text" label="Specify path for the checkpoints, where the Training model checkpoints are at." value="/mnt/finkbeinernas/robodata/Sina/checkpoints" help="For example: /mnt/finkbeinernas/robodata/Sina/checkpoints" size="70" />
+<param name="checkpoint_path" type="text" format="text" label="Specify path for the checkpoints, where the Training model checkpoints are at." value="//mnt/finkbeinernas/robodata/Sina/checkpoints" help="For example: /mnt/finkbeinernas/robodata/Sina/checkpoints" size="70" />
 
-<param name="OutputPath" type="text" format="text" label="Specify path for the output, where the predicted images will be saved at." help = "For example: /mnt/finkbeinernas/robodata/Sina" size="70" />
+<param name="output_path" type="text" format="text" label="Specify path for the output, where the predicted images will be saved at." help="For example: /mnt/finkbeinernas/robodata/Sina" size="70" />
 
-<param name="TillStep" type="text" format ="text" label="Specify the final step of training you want the training to go on." value = "285" help="It will train for an additional steps till it reaches the number you specify!" size="70" />
+<param name="till_step" type="text" format ="text" label="Specify the final step of training you want the training to go on." value = "285" help="It will train for an additional steps till it reaches the number you specify!" size="70" />
 
 </inputs>
 
