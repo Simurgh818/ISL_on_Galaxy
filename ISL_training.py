@@ -20,7 +20,7 @@ def main():
 	# The directory where the checkpoints and output prediction image will be saved at.
 	base_dir = 'export BASE_DIRECTORY=/mnt/finkbeinernas/robodata/Sina/in-silico-labeling/isl; '
 	
-	cmd2 = [virtual_env_path_active + base_directory_path + base_dir + 'bazel run isl:launch -- \
+	cmd2 = [base_directory_path + base_dir + 'bazel run isl:launch -- \
 	  --alsologtostderr \
 	  --base_directory $BASE_DIRECTORY \
 	  --mode TRAIN \

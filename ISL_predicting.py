@@ -23,7 +23,7 @@ def main():
 	base_dir = 'export BASE_DIRECTORY=/mnt/finkbeinernas/robodata/Sina/in-silico-labeling/isl;  '
 	
 
-	baz_cmd = [base_directory_path + virtual_env_path_active + base_dir + 'bazel run isl:launch -- \
+	baz_cmd = [base_directory_path + base_dir + 'bazel run isl:launch -- \
 	  --alsologtostderr \
 	  --base_directory $BASE_DIRECTORY \
 	  --mode EVAL_EVAL \
