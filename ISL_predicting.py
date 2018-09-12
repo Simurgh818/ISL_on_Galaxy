@@ -33,6 +33,7 @@ def main():
 	  --read_pngs \
 	  --dataset_eval_directory ' + dataset_eval_dir + '  \
 	  --infer_channel_whitelist ' + infer_chan + ' \
+	  --infer_simplify_error_panels \
     > ' + output_dir + '/predicting_output_'+ mod + '_'+ date_time +'_'+ image_crop_size +'_condition_b_sample_images.txt \
     2> ' + output_dir + '/predicting_error_'+ mod + '_'+ date_time +'_'+ image_crop_size +'_condition_b_sample_images.txt;']
 	
