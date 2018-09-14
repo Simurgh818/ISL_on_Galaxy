@@ -5,19 +5,19 @@
 <command>
 <!-- <command interpreter="bash"> -->
 
-source ~/venvs/tensorflow/SinaFlow/bin/activate; python3.6 /home/sinadabiri/galaxy-new2/galaxy/tools/dev_staging_modules/ISL_training.py $dataset_train_path $checkpoint_path $output_path $till_step $outfile
+source /finkbeiner/imaging/home/fbgalaxy/.virtualenvs/insilico/bin/activate; python3.6 /finkbeiner/imaging/home/galaxy/tools/dev_staging_modules/ISL_training.py $dataset_train_path $checkpoint_path $output_path $until_step $outfile
 </command>
 
 <inputs>
 
 
-<param name="dataset_train_path" type="text" format="text" label="Specify path for the dataset, where the images to be analyzed are at." value="/home/sinadabiri/Testing-In-Silico-Labeling/data_sample/condition_e_sample_B2" help="Note that /your_folders/data_sample." size="70" />
+<param name="dataset_train_path" type="text" format="text" label="Specify path for training data images." value="/home/sinadabiri/Testing-In-Silico-Labeling/data_sample/condition_e_sample_B2" help="Note that /your_folders/data_sample." size="70" />
 
-<param name="checkpoint_path" type="text" format="text" label="Specify path for the checkpoints, where the Training model checkpoints are at." value="//mnt/finkbeinernas/robodata/Sina/checkpoints" help="For example: /mnt/finkbeinernas/robodata/Sina/checkpoints" size="70" />
+<param name="checkpoint_path" type="text" format="text" label="Specify model location. This is the path where the last model checkpoint is stored." value="/finkbeiner/imaging/home/in-silico/in-silico-labeling/isl/checkpoints" help="For example: /finkbeiner/imaging/home/in-silico/in-silico-labeling/isl/checkpoints" size="70" />
 
-<param name="output_path" type="text" format="text" label="Specify path for the output, where the predicted images will be saved at." help="For example: /mnt/finkbeinernas/robodata/Sina" size="70" />
+<param name="output_path" type="text" format="text" label="Specify path for the output, where the new checkpoints will be saved in a subfolder called 'train'." help="For example: /finkbeiner/imaging/smb-robodata/your_folders" size="70" />
 
-<param name="till_step" type="text" format ="text" label="Specify the final step of training you want the training to go on." value = "285" help="It will train for an additional steps till it reaches the number you specify!" size="70" />
+<param name="until_step" type="text" format ="text" label="Specify the final step of training you want the training to go on." value = "285" help="It will train for an additional steps till it reaches the number you specify!" size="70" />
 
 </inputs>
 
@@ -27,7 +27,8 @@ source ~/venvs/tensorflow/SinaFlow/bin/activate; python3.6 /home/sinadabiri/gala
 
 
 <help>
-Exports the Base Directory, and then Runs the prediction for the image folder.
+This interface sends Unix commands to run In-Silico Labeling TensorFlow program (Christiansen et al 2018). There are two modes: Predicting and Training. This one is for Training. The user will get new checkpoints based on if they want to continue training the ISL model or start from scratch and train the model from step 1.
+
 </help>
 
 </tool>

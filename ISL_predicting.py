@@ -1,46 +1,54 @@
+''' This interface sends Unix commands to run In-Silico Labeling TensorFlow program (Christiansen et al 2018). There are two modes: Predicting and Training. This one is for Predicting.
+'''
+
 import subprocess
 import argparse
 import sys, os
 from datetime import datetime
 from time import strftime
 
-dataset_eval_dir = ' '
-output_dir = ' '
+dataset_eval_path = ' '
+output_path = ' '
 
 
 def main():
+	""" First the script makes sure the Bazel has been shutdown properly. Then it starts the bazel command with the following arguments:
 
-	# ~/venvs/tensorflow/SinaFlow/bin/activate
-	# virtual_env_path_active = 'source ~/venvs/tensorflow/SinaFlow/bin/activate;  '
-	
-	# /home/sinadabiri/venvs/in-silico-labeling-master
-	base_directory_path = 'cd /home/sinadabiri/venvs/in-silico-labeling-master; '
+	Args: 
+	crop_size: the image crop size the user chose the prediction to be done for.
+	model_location: wheter the user wants to use the model that has been trained before in the program, or use their own trained model.
+	output_path: The location where the folder (eval_eval_infer) containing the prediction image will be stored at. 
+	dataset_eval_path: The location where the images to be used for prediction are sotred at.
+	infer_channels: The microscope inference channels.
 
+	"""
+
+	#Making sure the Bazel program has been shutdown properly.
+	base_directory_path = 'cd /finkbeiner/imaging/home/in-silico/in-silico-labeling; '
 	cmd1 = [base_directory_path + 'bazel shutdown;']
 	process1 = subprocess.Popen(cmd1, shell=True, stdout=subprocess.PIPE)
 	process1.wait()
 
-	base_dir = 'export BASE_DIRECTORY=/mnt/finkbeinernas/robodata/Sina/in-silico-labeling/isl;  '
-	
-
+	#Running Bazel for prediction. Note txt log files are also being created in case troubleshooting is needed. 
+	base_dir = 'export BASE_DIRECTORY=/finkbeiner/imaging/home/in-silico/in-silico-labeling/isl;  '
 	baz_cmd = [base_directory_path + base_dir + 'bazel run isl:launch -- \
 	  --alsologtostderr \
 	  --base_directory $BASE_DIRECTORY \
 	  --mode EVAL_EVAL \
 	  --metric INFER_FULL \
-	  --stitch_crop_size '+ image_crop_size + ' ' +  model_type +' \
-	  --output_path '+ output_dir + ' \
+	  --stitch_crop_size '+ crop_size + ' ' +  model_location +' \
+	  --output_path '+ output_path + ' \
 	  --read_pngs \
-	  --dataset_eval_directory ' + dataset_eval_dir + '  \
-	  --infer_channel_whitelist ' + infer_chan + ' \
+	  --dataset_eval_directory ' + dataset_eval_path + '  \
+	  --infer_channel_whitelist ' + infer_channels + ' \
 	  --infer_simplify_error_panels \
-    > ' + output_dir + '/predicting_output_'+ mod + '_'+ date_time +'_'+ image_crop_size +'_condition_b_sample_images.txt \
-    2> ' + output_dir + '/predicting_error_'+ mod + '_'+ date_time +'_'+ image_crop_size +'_condition_b_sample_images.txt;']
+    > ' + output_path + '/predicting_output_'+ mod + '_'+ date_time +'_'+ crop_size +'_condition_b_sample_images.txt \
+    2> ' + output_path + '/predicting_error_'+ mod + '_'+ date_time +'_'+ crop_size +'_condition_b_sample_images.txt;']
 	
 	process = subprocess.Popen(baz_cmd, shell=True, stdout=subprocess.PIPE)
 	process.wait()
-	output = process.communicate()[0]
-
+	
+	#Here we shutdown the Bazel program. 
 	cmd3 = [base_directory_path + 'bazel shutdown;']
 	process3 = subprocess.Popen(cmd3, shell=True, stdout=subprocess.PIPE)
 	process3.wait()
@@ -49,11 +57,13 @@ def main():
 
 
 if __name__ == '__main__':
+
+  #Receiving the variables from the XML script, parse them, initialize them, and verify the paths exist. 
   
   # ----Parser-----------------------
 	parser = argparse.ArgumentParser(description="ISL Predicting.")
 	parser.add_argument("crop_size", help="Image Crop Size.")
-	parser.add_argument("model", help="Model type.")
+	parser.add_argument("model_location", help="Model Location.")
 	parser.add_argument("output_path", help="Output Image Folder location.")
 	parser.add_argument("dataset_eval_path", help="Folder path to images directory.")
 	parser.add_argument("infer_channels", help="Channel Inferences.")
@@ -61,40 +71,34 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 
   # ----Initialize parameters------------------
+	crop_size = args.crop_size
+	model_location = args.model_location
+	output_path = args.output_path
+	dataset_eval_path = args.dataset_eval_path
+	infer_channels = args.infer_channels
 
-	image_crop_size = args.crop_size
-	model_type = args.model
-	output_dir = args.output_path
-	dataset_eval_dir = args.dataset_eval_path
-	infer_chan = args.infer_channels
-
-	if model_type != '':
-		model_type = '--restore_directory /home/sinadabiri/venvs/in-silico-labeling-master/isl/checkpoints'
+	if model_location != '':
+		model_location = '--restore_directory /finkbeiner/imaging/home/in-silico/in-silico-labeling/isl/checkpoints'
 		mod = 'ISL-Model'
 	else:
-		model_type = ''
+		model_location = ''
 		mod = 'Your-Model'
 	
 	# ----Confirm given folders exist--
-
-	assert os.path.exists(dataset_eval_dir), 'Confirm the given path for images directory exists.'
-	assert os.path.exists(output_dir), 'Confirm the given path for output images directory exists.'
+	if not os.path.exists(dataset_eval_path):
+	    print 'Confirm the given path to input images (transmitted images used to generate prediction image) exists.'
+	assert os.path.exists(dataset_eval_path), 'Path to input images (transmitted images used to generate prediction image).'
+	if not os.path.exists(output_path):
+	    print 'Confirm the given path to output of prediction for fluorescent and validation images exists.'	
+	assert os.path.exists(output_path), 'Path to output of prediction for fluorescent and validation images.'
 
 	date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
 
 	print ('\n The Evaluation Directory is:')
-	print (dataset_eval_dir)
+	print (dataset_eval_path)
 	print ('\n The Output Directory is:')
-	print (output_dir)
+	print (output_path)
 	print ('\n ')
-	# # Confirm given folders exist
-	# if not os.path.exists(input_path):
-	#     print 'Confirm the given path for data exists.'
-	# assert os.path.exists(input_path), 'Confirm the given path for data exists.'
-	# if not os.path.exists(output_path):
-	#     print 'Confirm the given path for results exists.'
-	# assert os.path.exists(output_path), 'Confirm the given path for results exists.'
-	# assert input_path != output_path, 'With new well subdirectory requirement, output destination must be different than input.'
 
 	main()
 
