@@ -4,21 +4,30 @@
 
 <command>
 <!-- <command interpreter="bash"> -->
+<!-- /home/sinadabiri/venvs/tensorflow/SinaFlow/bin/activate
+/home/sinadabiri/galaxy-neuron-analysis/galaxy/tools/dev_staging_modules-->
 
-source /finkbeiner/imaging/home/fbgalaxy/.virtualenvs/insilico/bin/activate; python3.6 /finkbeiner/imaging/home/galaxy/tools/dev_staging_modules/ISL_predicting.py $crop_size $model_location $output_path $dataset_eval_path $infer_channels 
+source finkbeiner/imaging/home/fbgalaxy/.virtualenvs/insilico/bin/activate;
+
+echo "Before Python";  
+
+python3.6 /finkbeiner/imaging/home/galaxy/tools/dev_staging_modules/ISL_predicting.py $crop_size $model_location $output_path $dataset_eval_path $infer_channels;
+
+echo "End of Prediction";
 </command>
 
 <inputs>
 
-<param name="crop_size" type="text" label="Select Crop Size between 285 and 1500." help="The default value is 1500. One can chose smaller value like 375 for faster processing." value = "375" />
+<param name="crop_size" type="text" label="Select Crop Size between 285 and 1500." help="The default value is 1500. One can chose smaller value like 375 for faster processing." value = "300" />
 
+<!-- /finkbeiner/imaging/smb-robodata/Sina/checkpoints -->
+<param name="model_location" type="text" format="text" label="Specify path to model." value="/finkbeiner/imaging/home/in-silico/checkpoints" help="The default value is ISL model: /finkbeiner/imaging/home/in-silico/in-silico-labeling/isl/checkpoints. If left blank it will train a new model!"/>
 
-<param name="model_location" type="text" format="text" label="Specify path to model." value = "/finkbeiner/imaging/home/in-silico/in-silico-labeling/isl/checkpoints" help="The default value is ISL model: /finkbeiner/imaging/home/in-silico/in-silico-labeling/isl/checkpoints. If left blank it will train a new model!"/>
+<!-- /finkbeiner/imaging/smb-robodata/Sina -->
+<param name="output_path" type="text" format="text" label="Specify path for the output, where the predicted images will be saved." value="/finkbeiner/imaging/smb-robodata/Sina/LogFiles" help="For example: /finkbeiner/imaging/smb-robodata/Sina" size="70" />
 
-
-<param name="output_path" type="text" format="text" label="Specify path for the output, where the predicted images will be saved." help="For example: /finkbeiner/imaging/smb-robodata/your_folders" size="70" />
-
-<param name="dataset_eval_path" type="text" format="text" label="Specify path for the dataset, where the images to be analyzed are located." value="/finkbeiner/imaging/home/in-silico/data_sample/condition_b_sample" help="For example: /finkbeiner/imaging/home/in-silico/data_sample/condition_b_sample" size="70" />
+<!-- /finkbeiner/imaging/smb-robodata/Sina/data_sample/condition_b_sample -->
+<param name="dataset_eval_path" type="text" format="text" label="Specify path for the dataset, where the images to be analyzed are located." value="/finkbeiner/imaging/smb-robodata/Sina/data_sample/condition_b_sample" help="For example: /finkbeiner/imaging/home/in-silico/data_sample/condition_b_sample" size="70" />
 
 <!-- ,DEAD_CONFOCAL -->
 <param name="infer_channels" type="select" format="text" label="Specify Inference Channels" help="If images are confocal for survival tracking choose DAPI_CONFOCAL,CELLMASK_CONFOCAL,DEAD_CONFOCAL or for all other uses choose DAPI_CONFOCAL, MAP2_CONFOCAL,NFH_CONFOCAL. But if images are widefield choose DAPI_WIDEFIELD, TUJ1_WIDEFIELD, ISLET_WIDEFIELD">
@@ -31,7 +40,7 @@ source /finkbeiner/imaging/home/fbgalaxy/.virtualenvs/insilico/bin/activate; pyt
 </inputs>
 
 <outputs>
-<data name="outfile" type="data" format="data" label="ISL_ouput"/>
+<data name="outfile" type="data" format="data" label="ISL_inference"/>
 </outputs>
 
 
