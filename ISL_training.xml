@@ -1,15 +1,17 @@
 <tool id="In_Silico_Labeling_Training" name="In-Silico Labeling - Training" version="0.02">
 
-<description> This one is for Training.</description>
+	<description> This one is for Training.</description>
 
-<command>
-<!-- <command interpreter="bash"> -->
+	<command>
+		<!-- <command interpreter="bash"> -->
 <!-- /home/sinadabiri/venvs/tensorflow/SinaFlow/bin/activate
-/home/sinadabiri/galaxy-neuron-analysis/galaxy/tools/dev_staging_modules-->
+/home/sinadabiri/galaxy-neuron-analysis/galaxy
+-->
 
-source finkbeiner/imaging/home/fbgalaxy/.virtualenvs/insilico/bin/activate;
+source /finkbeiner/imaging/home/fbgalaxy/.virtualenvs/insilico/bin/activate;
 
-echo "Before Python";  
+
+echo "Before Python";
 
 python3.6 /finkbeiner/imaging/home/galaxy/tools/dev_staging_modules/ISL_training.py $dataset_train_path $model_location $output_path $until_step $outfile;
 
@@ -18,27 +20,25 @@ echo "End of Training";
 
 <inputs>
 
-<!-- /finkbeiner/imaging/smb-robodata/Sina/data_sample/condition_e_sample_B2 -->
-<param name="dataset_train_path" type="text" format="text" label="Specify path for training data images." value='/finkbeiner/imaging/smb-robodata/Sina/data_sample/condition_e_sample_B2' help="Note that /your_folders/data_sample." size="70" />
+	<!-- /finkbeiner/imaging/smb-robodata/Sina/data_sample/condition_e_sample_B2 -->
+	<param name="dataset_train_path" type="text" format="text" label="Specify path for training data images." value='/finkbeiner/imaging/home/in-silico/datasets/condition_e_sample_B2' help="Note that /mnt/finkbeinernas/robodata/Sina/data_sample/condition_e_sample_B2" size="70" />
 
-<!-- /finkbeiner/imaging/smb-robodata/Sina/checkpoints -->
-<param name="model_location" type="text" format="text" label="Specify model location. This is the path where the last model checkpoint is stored." value="/finkbeiner/imaging/home/in-silico/checkpoints" help="For example: /finkbeiner/imaging/home/in-silico/in-silico-labeling/isl/checkpoints" size="70" />
+	<!-- /finkbeiner/imaging/smb-robodata/Sina/checkpoints -->
+	<param name="model_location" type="text" format="text" label="Specify model location. This is the path where the last model checkpoint is stored." value="/finkbeiner/imaging/home/in-silico/checkpoints" help="For example: /finkbeiner/imaging/home/in-silico/in-silico-labeling/isl/checkpoints" size="70" />
 
-<!-- /finkbeiner/imaging/smb-robodata/Sina -->
-<param name="output_path" type="text" format="text" value = "/finkbeiner/imaging/smb-robodata/Sina/LogFiles" label="Specify path for the output, where the new checkpoints will be saved in a subfolder called 'train'." help="For example: /finkbeiner/imaging/smb-robodata/your_folders" size="70" />
+	<!-- /finkbeiner/imaging/smb-robodata/Sina -->
+	<param name="output_path" type="text" format="text" label="Specify path for the output, where the new checkpoints will be saved in a subfolder called 'train'." help="For example: /finkbeiner/imaging/smb-robodata/your_folders" size="70" />
 
-
-<param name="until_step" type="text" format ="text" label="Specify the final step of training you want the training to go on." value = "3" help="It will train for an additional steps till it reaches the number you specify!" size="70" />
+	<param name="until_step" type="text" format ="text" label="Specify the final step of training you want the training to go on." value = "3" help="It will train for an additional steps till it reaches the number you specify!" size="70" />
 
 </inputs>
 
 <outputs>
-<data name="outfile" type="data" format="data" label="ISL_training"/>
+	<data name="outfile" type="data" format="data" label="ISL_training"/>
 </outputs>
 
-
 <help>
-This interface sends Unix commands to run In-Silico Labeling TensorFlow program (Christiansen et al 2018). There are two modes: Predicting and Training. This one is for Training. The user will get new checkpoints based on if they want to continue training the ISL model or start from scratch and train the model from step 1.
+	This interface sends Unix commands to run In-Silico Labeling TensorFlow program (Christiansen et al 2018). There are two modes: Predicting and Training. This one is for Training. The user will get new checkpoints based on if they want to continue training the ISL model or start from scratch and train the model from step 1.
 
 </help>
 

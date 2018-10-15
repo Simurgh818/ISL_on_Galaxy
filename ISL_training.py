@@ -4,6 +4,8 @@
 import subprocess
 import argparse
 import os
+import sys
+sys.path.append('/mnt/finkbeinernas/robodata/Sina/ISL_Scripts/')
 import configure
 from datetime import datetime
 from time import strftime
@@ -12,12 +14,12 @@ from time import strftime
 def main():
 	""" First the script makes sure the Bazel has been shutdown properly. Then it starts the bazel command with the following arguments:
 
-	Args: 
+	Args:
 	dataset_train_path: Folder path to images directory to be used for training.
-	model_location: Folder path to where the checkpoints of the ISL model is stored. 
-	output_path: Folder path to where the train subdirectory, that contains the checkpoints will be saved.  
-	until_step: The upper step number limit for training. 
-	
+	model_location: Folder path to where the checkpoints of the ISL model is stored.
+	output_path: Folder path to where the train subdirectory, that contains the checkpoints will be saved.
+	until_step: The upper step number limit for training.
+
 	"""
 
 	#Making sure the Bazel program has been shutdown properly.
@@ -31,7 +33,7 @@ def main():
 
 	# The directory where the checkpoints in 'train' subfolder will be saved.
 	base_dir = 'export BASE_DIRECTORY=' + configure.base_directory + '/isl; '
-	
+
 	cmd2 = [base_directory_path + base_dir + 'bazel run isl:launch -- \
 	--alsologtostderr \
 	--base_directory $BASE_DIRECTORY \
@@ -39,12 +41,12 @@ def main():
 	--metric LOSS \
 	--master "" \
 	--restore_directory '+ configure.model_location + ' \
-	--output_path '+ configure.output_path + ' \
+	--output_path '+ output_path + ' \
 	--read_pngs \
-	--dataset_train_directory ' + configure.dataset_training + ' \
+	--dataset_train_directory ' + dataset_train_path + ' \
 	--until_step ' + until_step + ' \
-	> ' + configure.output_path + '/training_output_'+ date_time +'_B2images.txt \
-	2> ' + configure.output_path + '/training_error_'+ date_time +'_B2images.txt;']
+	> ' + output_path + '/training_output_'+ date_time +'_B2images.txt \
+	2> ' + output_path + '/training_error_'+ date_time +'_B2images.txt;']
 
 	process2 = subprocess.Popen(cmd2, shell=True, stdout=subprocess.PIPE)
 	process2.wait()
@@ -61,7 +63,7 @@ def main():
 	# process2 = subprocess.Popen(cmd2, shell=True, stdout=subprocess.PIPE)
 	# process2.wait()
 	# output2 = process2.communicate()[0]
-	
+
 	print("Model checkpoints are written to:")
 	print(output_path)
 	# print ("The Link to TensorBoard is:")
@@ -70,40 +72,40 @@ def main():
 	# return output2
 
 
-if __name__ == '__main__':
-  
-  #Receiving the variables from the XML script, parse them, initialize them, and verify the paths exist. 
-  
+	if __name__ == '__main__':
+
+  #Receiving the variables from the XML script, parse them, initialize them, and verify the paths exist.
+
   # ----Parser-----------------------
-	parser = argparse.ArgumentParser(description="ISL Testing.")
-	parser.add_argument("dataset_train_path", help="Folder path to images directory.")
-	parser.add_argument("model_location", help="Folder path to checkpoint directory.")
-	parser.add_argument("output_path", help="Output 'train' Folder location, where checkpoints will be saved.")
-	parser.add_argument("until_step", help="Train till step number mentioned.")
-	parser.add_argument("outfile", help="Folder path to images directory.")
-	args = parser.parse_args()
+  parser = argparse.ArgumentParser(description="ISL Testing.")
+  parser.add_argument("dataset_train_path", help="Folder path to images directory.")
+  parser.add_argument("model_location", help="Folder path to checkpoint directory.")
+  parser.add_argument("output_path", help="Output 'train' Folder location, where checkpoints will be saved.")
+  parser.add_argument("until_step", help="Train till step number mentioned.")
+  parser.add_argument("outfile", help="Folder path to images directory.")
+  args = parser.parse_args()
 
   # ----Initialize parameters------------------
-	dataset_train_path = args.dataset_train_path
-	model_location = args.model_location
-	output_path = args.output_path
-	until_step = args.until_step
-	outfile = args.outfile
+  dataset_train_path = args.dataset_train_path
+  model_location = args.model_location
+  output_path = args.output_path
+  until_step = args.until_step
+  outfile = args.outfile
 
 	# ----Confirm given folders exist--
 	if not os.path.exists(dataset_train_path):
-	    print ('Confirm the given path to input images (transmitted images used for training) exists.')
-	assert os.path.exists(dataset_train_path), 'Confirm the given path for training images directory exists.'
-	if not os.path.exists(model_location):
-	    print ('Confirm the given path to checkpoints directory exists.')
-	assert os.path.exists(model_location), 'Confirm the given path for checkpoints directory exists.'
-	if not os.path.exists(output_path):
-		print ('Confirm the given path to output train directory (where new checkpoints will be saved) exists.')
-	elif (args.output_path==args.dataset_train_path or args.output_path==args.model_location):
-		print ('Confirm the given path to output train directory is different than dataset or checkpoint paths.')
-		assert os.path.exists(output_path), 'Confirm the given path for output train directory (where new checkpoints will be saved) exists.'
-	
-	date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
-	
-	main()
+		print ('Confirm the given path to input images (transmitted images used for training) exists.')
+		assert os.path.exists(dataset_train_path), 'Confirm the given path for training images directory exists.'
+		if not os.path.exists(model_location):
+			print ('Confirm the given path to checkpoints directory exists.')
+			assert os.path.exists(model_location), 'Confirm the given path for checkpoints directory exists.'
+			if not os.path.exists(output_path):
+				print ('Confirm the given path to output train directory (where new checkpoints will be saved) exists.')
+
+				assert os.path.abspath(output_path) != os.path.abspath(dataset_train_path) ,  'Please provide unique output path  (not model or data path).'
+				assert os.path.abspath(output_path) != os.path.abspath(model_location),  'Please provide unique output path  (not model or data path).'
+
+				date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
+
+				main()
 
