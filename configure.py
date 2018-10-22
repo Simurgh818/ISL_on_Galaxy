@@ -5,10 +5,10 @@
 
 virtual_environment = '/home/sinadabiri/venvs/tensorflow/SinaFlow/bin/activate'
 base_directory = '/home/sinadabiri/venvs/in-silico-labeling-master'
-model_location = '/mnt/finkbeinernas/robodata/Sina/checkpoints'
-# output_path = '/mnt/finkbeinernas/robodata/Sina/LogFiles'
-# dataset_prediction = '/mnt/finkbeinernas/robodata/Sina/data_sample/condition_b_sample'
-dataset_training = '/mnt/finkbeinernas/robodata/Sina/data_sample/condition_e_sample_B2'
+model_location = '/home/sinadabiri/venvs/in-silico-labeling-master/isl/checkpoints'
+# # output_path = '/mnt/finkbeinernas/robodata/Sina/LogFiles'
+dataset_prediction = '/mnt/finkbeinernas/robodata/Sina/data_sample'
+# dataset_training = '/mnt/finkbeinernas/robodata/Sina/data_sample/condition_e_sample_B2'
 
 '''This part is for Server '''
 # virtual_environment = '/finkbeiner/imaging/home/fbgalaxy/.virtualenvs/insilico/bin/activate'

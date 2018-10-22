@@ -1,11 +1,11 @@
-''' This interface sends Unix commands to run In-Silico Labeling TensorFlow program (Christiansen et al 2018). There are two modes: Predicting and Training. This one is for Predicting.
+''' This interface sends Unix commands to run In-Silico Labeling TensorFlow program (Christiansen et al 2018). This script is to run prediction on multiple images.
 '''
 
 import subprocess
 import argparse
 import os
 import sys
-sys.path.append('/mnt/finkbeinernas/robodata/Sina/ISL_Scripts/')
+sys.path.append('/mnt/finkbeinernas/robodata/Sina/ISL_Scripts')
 import configure
 from datetime import datetime
 from time import strftime
@@ -29,37 +29,53 @@ def main():
 	# process1 = subprocess.Popen(cmd1, shell=True, stdout=subprocess.PIPE)
 	# process1.wait()
 
-	#Running Bazel for prediction. Note txt log files are also being created incase troubleshooting is needed.
-	print("Bazel Launching")
+	print(os.listdir(configure.dataset_prediction),'\n')
 
-	base_dir = 'export BASE_DIRECTORY=' + configure.base_directory + '/isl;  '
+	# Loop through subfolders in the dataset folder
+	for folder in os.listdir(configure.dataset_prediction):
 
-	baz_cmd = [base_directory_path + base_dir + 'bazel run isl:launch -- \
-	--alsologtostderr \
-	--base_directory $BASE_DIRECTORY \
-	--mode EVAL_EVAL \
-	--metric INFER_FULL \
-	--stitch_crop_size '+ crop_size + ' ' +  configure.model_location + '\
-	--output_path '+ output_path + ' \
-	--read_pngs \
-	--dataset_eval_directory ' + dataset_eval_path + ' \
-	--infer_channel_whitelist ' + infer_channels + ' \
-	--error_panels False \
-	--infer_simplify_error_panels \
-	> ' + output_path + '/predicting_output_'+ mod + '_'+ date_time +'_'+ crop_size +'_condition_b_sample_images.txt \
-	2> ' + output_path + '/predicting_error_'+ mod + '_'+ date_time +'_'+ crop_size + '_condition_b_sample_images.txt;']
+		print(folder)
+		# use re.match
+		if 'condition_e_sample' in folder:
+			#Running Bazel for prediction. Note txt log files are also being created incase troubleshooting is needed.
+			date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
+			dataset_eval_path = str(os.path.join(configure.dataset_prediction, folder))
+			print("Dataset Eval Path is: ",configure.dataset_prediction,'\n')
 
-	process = subprocess.Popen(baz_cmd, shell=True, stdout=subprocess.PIPE)
-	process.wait()
+			print("Bazel Launching", '\n')
 
-	print("Bazel Shutdown")
+			base_dir = 'export BASE_DIRECTORY=' + configure.base_directory + '/isl;  '
 
-	#Here we shutdown the Bazel program.
-	cmd3 = [base_directory_path + 'bazel shutdown;']
-	process3 = subprocess.Popen(cmd3, shell=True, stdout=subprocess.PIPE)
-	process3.wait()
+			baz_cmd = [base_directory_path + base_dir + 'bazel run isl:launch -- \
+			--alsologtostderr \
+			--base_directory $BASE_DIRECTORY \
+			--mode EVAL_EVAL \
+			--metric INFER_FULL \
+			--stitch_crop_size '+ crop_size + ' \
+			--restore_directory '+ configure.model_location + ' \
+			--output_path '+ output_path + ' \
+			--read_pngs \
+			--dataset_eval_directory ' + dataset_eval_path + ' \
+			--infer_channel_whitelist ' + infer_channels + ' \
+			--error_panels False \
+			--infer_simplify_error_panels \
+			> ' + output_path + '/predicting_output_'+ mod + '_'+ date_time +'_'+ crop_size +'_'+ folder + '_images.txt \
+			2> ' + output_path + '/predicting_error_'+ mod + '_'+ date_time +'_'+ crop_size + '_'+ folder + '_images.txt;']
 
-	return
+			process = subprocess.Popen(baz_cmd, shell=True, stdout=subprocess.PIPE)
+			process.wait()
+
+			print("Bazel Shutdown")
+
+			#Here we shutdown the Bazel program.
+			cmd3 = [base_directory_path + 'bazel shutdown;']
+			process3 = subprocess.Popen(cmd3, shell=True, stdout=subprocess.PIPE)
+			process3.wait()
+		else:
+			continue
+
+			return
+
 
 
 if __name__ == '__main__':

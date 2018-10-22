@@ -9,10 +9,9 @@
 
 source /home/sinadabiri/venvs/tensorflow/SinaFlow/bin/activate;
 
-
 echo "Before Python";
 
-python3.6 /home/sinadabiri/galaxy-neuron-analysis/galaxy/tools/dev_staging_modules/ISL_predicting_Multi_Image.py $crop_size $model_location $output_path $dataset_eval_path $infer_channels;
+python3.6 /home/sinadabiri/galaxy-neuron-analysis/galaxy/tools/dev_staging_modules/ISL_predicting.py $crop_size $model_location $output_path $dataset_eval_path $infer_channels;
 
 echo "End of Prediction";
 </command>
@@ -25,7 +24,7 @@ echo "End of Prediction";
 	<param name="model_location" type="text" format="text" label="Specify path to model." value="/finkbeiner/imaging/home/in-silico/checkpoints" help="The default value is ISL model: /finkbeiner/imaging/home/in-silico/in-silico-labeling/isl/checkpoints. If left blank it will train a new model!"/>
 
 	<!-- /finkbeiner/imaging/smb-robodata/Sina -->
-	<param name="output_path" type="text" format="text" label="Specify path for the output, where the predicted images will be saved." help="For example: /finkbeiner/imaging/smb-robodata/Sina" size="70" />
+	<param name="output_path" type="text" format="text" label="Specify path for the output, where the predicted images will be saved." help="For example: /finkbeiner/imaging/smb-robodata/Sina/LogFiles" size="70" />
 
 	<!-- /finkbeiner/imaging/smb-robodata/Sina/data_sample/condition_b_sample -->
 	<param name="dataset_eval_path" type="text" format="text" label="Specify path for the dataset, where the images to be analyzed are located." value="/finkbeiner/imaging/home/in-silico/datasets/condition_b_sample" help="For example: /finkbeiner/imaging/home/in-silico/datasets/condition_b_sample" size="70" />
@@ -45,7 +44,6 @@ echo "End of Prediction";
 
 <help>
 	This interface sends Unix commands to run In-Silico Labeling TensorFlow program (Christiansen et al 2018). There are two modes: Predicting and Training. This one is for Predicting.
-
 </help>
 
 </tool>

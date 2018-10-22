@@ -5,7 +5,7 @@ import subprocess
 import argparse
 import os
 import sys
-sys.path.append('/mnt/finkbeinernas/robodata/Sina/ISL_Scripts/')
+sys.path.append('/finkbeiner/imaging/smb-robodata/Sina/ISL_Scripts/')
 import configure
 from datetime import datetime
 from time import strftime
