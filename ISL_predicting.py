@@ -2,14 +2,76 @@
 '''
 
 import subprocess
-import argparse
-import os
-import sys
+import argparse, pickle, os, sys
 sys.path.append('/mnt/finkbeinernas/robodata/Sina/ISL_Scripts')
 import configure
+sys.path.append('/home/sinadabiri/galaxy-neuron-analysis/galaxy/tools/dev_staging_modules')
+# import utils
+# from background_removal_mp import get_image_token_list
 from datetime import datetime
 from time import strftime
 
+global temp_directory, dataset_prediction
+temp_directory = '/mnt/finkbeinernas/robodata/Sina/LogFiles/temp_directory'
+
+INPUT_PATH = ''
+ROBO_NUMBER = None
+IMAGING_MODE = ''
+VALID_WELLS = []
+VALID_TIMEPOINTS = []
+
+def image_feeder(dataset_prediction):
+
+	global BG_WELL_DICT
+	# input_image_stack_list, BG_WELL_DICT = background_removal_mp.get_image_tokens_list(INPUT_PATH, ROBO_NUMBER, IMAGING_MODE, VALID_WELLS, VALID_TIMEPOINTS, BG_WELL)
+
+	# get channels
+	# channels = set([x[0][4] for x in image_stack_list])
+
+	# get rows and columns
+	# rows = background_removal_mp.natural_sort(set([re.search(r'[A-P]', x).group(0) for x in VALID_WELLS]))
+	# columns = background_removal_mp.natural_sort(set([re.search(r'\d{1,2}', x).group(0) for x in VALID_WELLS]))
+
+  # build list of wells in the imaging order (i.e. snaking across the plate)
+	wells_ordered = []
+	# for r in rows:
+	# 	for c in columns:
+	# 		well = r + c
+	# 		if any(well in x for x in VALID_WELLS):
+	# 			wells_ordered.extend([well])
+	# 			columns = list(reversed(columns))
+
+  # reorder image list by imaging order so that batches contain neighboring wells
+	# image_stack_list.sort(key=lambda x:sum(wells_ordered.index(i[3]) for i in x))
+
+	# for ch in channels:
+	# 	for tp in VALID_TIMEPOINTS:
+	# 		# subset list by images from current channel and timepoint
+	# 		image_stack_list_ch = [[tokens for tokens in montage if tokens[4] == ch if tokens[5] == tp] for montage in image_stack_list]
+
+			# remove empty lists for non-matching channels (couldn't figure out how to do it in the above list comprehension)
+			# image_stack_list_ch = [x for x in image_stack_list_ch if x]
+
+			# Add the code to copy one z-stack to tempfile, and then to send the temp folder to bazel for prediction
+
+			# if os.path.exists(temp_directory):
+			# 	os.mkdir(os.path.join(output_path,temp_directory))
+			# 	assert os.path.exists(temp_directory), 'Path to input images.'
+			# with os.scandir(dataset_prediction) as location:
+	for entry in os.listdir(dataset_prediction):
+		if 'well-A4' in entry:
+			print ((entry))
+			sub_dir_temp = os.path.join(temp_directory,'kevan_0_8')
+				# print(sub_dir_temp)
+				# os.popen('cp '+str(entry)+' '+ str(sub_dir_temp))
+				# print ('cp '+ dataset_prediction +'/' +os.path.join(entry)+' '+ sub_dir_temp+ ';')
+				# cmd0 = ['cp '+ dataset_prediction +'/' +entry+' '+ sub_dir_temp+ ';']
+				# process0 = subprocess.Popen(cmd0, shell=True, stdout=subprocess.PIPE)
+				# process0.wait()
+				# print(entry.name)
+
+
+		return temp_directory
 
 def main():
 	""" First the script makes sure the Bazel has been shutdown properly. Then it starts the bazel command with the following arguments:
@@ -28,19 +90,20 @@ def main():
 	# cmd1 = [base_directory_path + 'bazel version;']
 	# process1 = subprocess.Popen(cmd1, shell=True, stdout=subprocess.PIPE)
 	# process1.wait()
+	temp_directory = image_feeder(configure.dataset_prediction)
 
-	print(os.listdir(configure.dataset_prediction),'\n')
+	print('\n',os.listdir(temp_directory),'\n')
 
 	# Loop through subfolders in the dataset folder
-	for folder in os.listdir(configure.dataset_prediction):
 
-		print(folder)
+	for folder in os.listdir(temp_directory):
+
 		# use re.match
-		if 'condition_e_sample' in folder:
+		if str('kevan_0_8') in folder:
 			#Running Bazel for prediction. Note txt log files are also being created incase troubleshooting is needed.
 			date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
-			dataset_eval_path = str(os.path.join(configure.dataset_prediction, folder))
-			print("Dataset Eval Path is: ",configure.dataset_prediction,'\n')
+			dataset_eval_path = str(os.path.join(temp_directory, folder))
+			print("Dataset Eval Path is: ",dataset_eval_path,'\n')
 
 			print("Bazel Launching", '\n')
 
@@ -84,13 +147,21 @@ if __name__ == '__main__':
 
   # ----Parser-----------------------
 	parser = argparse.ArgumentParser(description="ISL Predicting.")
+	parser.add_argument("input_dict",
+	    help="Load input variable dictionary")
 	parser.add_argument("crop_size", help="Image Crop Size.")
 	parser.add_argument("model_location", help="Model Location.")
 	parser.add_argument("output_path", help="Output Image Folder location.")
 	parser.add_argument("dataset_eval_path", help="Folder path to images directory.")
 	parser.add_argument("infer_channels", help="Channel Inferences.")
+	# parser.add_argument("output_dict", help="Write variable dictionary.")
 
 	args = parser.parse_args()
+
+	# ----Load path dict-------------------------
+	infile = args.input_dict
+	# var_dict = pickle.load(open(infile, 'rb'))
+	# bg_well = str.strip(args.chosen_bg_well) if args.chosen_bg_well else None
 
   # ----Initialize parameters------------------
 	crop_size = args.crop_size
@@ -98,6 +169,16 @@ if __name__ == '__main__':
 	output_path = args.output_path
 	dataset_eval_path = args.dataset_eval_path
 	infer_channels = args.infer_channels
+
+	INPUT_PATH = args.dataset_eval_path
+	OUTPUT_PATH = args.output_path
+
+	# BG_WELL = bg_well
+	# ROBO_NUMBER = int(var_dict['RoboNumber'])
+	# IMAGING_MODE = var_dict['ImagingMode']
+	# VALID_WELLS = var_dict['Wells']
+	# VALID_TIMEPOINTS = var_dict['TimePoints']
+	# outfile = args.output_dict
 
 	if model_location != '':
 		model_location = '--restore_directory ' + configure.model_location
@@ -124,6 +205,13 @@ if __name__ == '__main__':
 	print(output_path)
 	print('\n ')
 
+	# temp_directory = image_feeder(configure.dataset_prediction)
+
 	main()
+
+	# ----Output for user and save dict----------
+
+	# Save dict to file
+	# pickle.dump(var_dict, open(outfile, 'wb'))
 
 
