@@ -11,8 +11,8 @@ source /home/sinadabiri/venvs/tensorflow/SinaFlow/bin/activate;
 
 echo "Before Python";
 
-python3.6 /home/sinadabiri/galaxy-neuron-analysis/galaxy/tools/dev_staging_modules/ISL_predicting.py $infile $crop_size $model_location $output_path $dataset_eval_path $infer_channels $outfile;
-
+python3.6 /home/sinadabiri/galaxy-neuron-analysis/galaxy/tools/dev_staging_modules/ISL_predicting.py $crop_size $model_location $output_path $dataset_eval_path $infer_channels;
+<!-- $infile $outfile -->
 echo "End of Prediction";
 </command>
 

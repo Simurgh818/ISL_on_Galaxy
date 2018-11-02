@@ -59,19 +59,32 @@ def image_feeder(dataset_prediction):
 			# 	assert os.path.exists(temp_directory), 'Path to input images.'
 			# with os.scandir(dataset_prediction) as location:
 	for entry in os.listdir(dataset_prediction):
-		if 'well-A4' in entry:
-			print ((entry))
+		if entry.find('well-A4')>= 0 :
+			filepath = dataset_prediction+'/'+entry
 			sub_dir_temp = os.path.join(temp_directory,'kevan_0_8')
-				# print(sub_dir_temp)
-				# os.popen('cp '+str(entry)+' '+ str(sub_dir_temp))
+			os.popen('cp '+filepath+' '+ sub_dir_temp)
 				# print ('cp '+ dataset_prediction +'/' +os.path.join(entry)+' '+ sub_dir_temp+ ';')
 				# cmd0 = ['cp '+ dataset_prediction +'/' +entry+' '+ sub_dir_temp+ ';']
 				# process0 = subprocess.Popen(cmd0, shell=True, stdout=subprocess.PIPE)
 				# process0.wait()
 				# print(entry.name)
 
+		elif entry.find('day-2,well-A1')>=0:
+			print (dataset_prediction+'/'+entry)
+			filepath = dataset_prediction+'/'+entry
+			if not os.path.exists(temp_directory + '/' + 'kevan_0_9'):
+				os.mkdir(os.path.join(temp_directory,'kevan_0_9'))
+			sub_dir_temp = os.path.join(temp_directory,'kevan_0_9')
+			os.popen('cp '+filepath+' '+ sub_dir_temp)
+		elif entry.find('day-6,well-A1')>=0:
+			print (dataset_prediction+'/'+entry)
+			filepath = dataset_prediction+'/'+entry
+			if not os.path.exists(temp_directory + '/' + 'kevan_0_10'):
+				os.mkdir(os.path.join(temp_directory,'kevan_0_10'))
+			sub_dir_temp = os.path.join(temp_directory,'kevan_0_10')
+			os.popen('cp '+filepath+' '+ sub_dir_temp)
 
-		return temp_directory
+	return temp_directory
 
 def main():
 	""" First the script makes sure the Bazel has been shutdown properly. Then it starts the bazel command with the following arguments:
@@ -99,7 +112,7 @@ def main():
 	for folder in os.listdir(temp_directory):
 
 		# use re.match
-		if str('kevan_0_8') in folder:
+		if str('kevan_0_') in folder:
 			#Running Bazel for prediction. Note txt log files are also being created incase troubleshooting is needed.
 			date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
 			dataset_eval_path = str(os.path.join(temp_directory, folder))
@@ -147,8 +160,7 @@ if __name__ == '__main__':
 
   # ----Parser-----------------------
 	parser = argparse.ArgumentParser(description="ISL Predicting.")
-	parser.add_argument("input_dict",
-	    help="Load input variable dictionary")
+	# parser.add_argument("input_dict", help="Load input variable dictionary")
 	parser.add_argument("crop_size", help="Image Crop Size.")
 	parser.add_argument("model_location", help="Model Location.")
 	parser.add_argument("output_path", help="Output Image Folder location.")
@@ -159,7 +171,7 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 
 	# ----Load path dict-------------------------
-	infile = args.input_dict
+	# infile = args.input_dict
 	# var_dict = pickle.load(open(infile, 'rb'))
 	# bg_well = str.strip(args.chosen_bg_well) if args.chosen_bg_well else None
 
