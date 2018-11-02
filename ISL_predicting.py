@@ -10,6 +10,7 @@ sys.path.append('/home/sinadabiri/galaxy-neuron-analysis/galaxy/tools/dev_stagin
 # from background_removal_mp import get_image_token_list
 from datetime import datetime
 from time import strftime
+import tempfile
 
 global temp_directory, dataset_prediction
 temp_directory = '/mnt/finkbeinernas/robodata/Sina/LogFiles/temp_directory'
@@ -58,11 +59,16 @@ def image_feeder(dataset_prediction):
 			# 	os.mkdir(os.path.join(output_path,temp_directory))
 			# 	assert os.path.exists(temp_directory), 'Path to input images.'
 			# with os.scandir(dataset_prediction) as location:
+	tmpdirISL = tempfile.mkdtemp()
+	print('The created Temp Directory is: ', tmpdirISL,'\n')
+
 	for entry in os.listdir(dataset_prediction):
 		if entry.find('well-A4')>= 0 :
 			filepath = dataset_prediction+'/'+entry
-			sub_dir_temp = os.path.join(temp_directory,'kevan_0_8')
-			os.popen('cp '+filepath+' '+ sub_dir_temp)
+			print (filepath)
+			if not os.path.exists(tmpdirISL + '/' + 'kevan_0_8'):
+				sub_dir_temp = os.mkdir(os.path.join(tmpdirISL,'kevan_0_8'))
+			os.popen('cp '+filepath+' '+ str(sub_dir_temp))
 				# print ('cp '+ dataset_prediction +'/' +os.path.join(entry)+' '+ sub_dir_temp+ ';')
 				# cmd0 = ['cp '+ dataset_prediction +'/' +entry+' '+ sub_dir_temp+ ';']
 				# process0 = subprocess.Popen(cmd0, shell=True, stdout=subprocess.PIPE)
@@ -70,21 +76,20 @@ def image_feeder(dataset_prediction):
 				# print(entry.name)
 
 		elif entry.find('day-2,well-A1')>=0:
-			print (dataset_prediction+'/'+entry)
 			filepath = dataset_prediction+'/'+entry
-			if not os.path.exists(temp_directory + '/' + 'kevan_0_9'):
-				os.mkdir(os.path.join(temp_directory,'kevan_0_9'))
-			sub_dir_temp = os.path.join(temp_directory,'kevan_0_9')
-			os.popen('cp '+filepath+' '+ sub_dir_temp)
-		elif entry.find('day-6,well-A1')>=0:
-			print (dataset_prediction+'/'+entry)
-			filepath = dataset_prediction+'/'+entry
-			if not os.path.exists(temp_directory + '/' + 'kevan_0_10'):
-				os.mkdir(os.path.join(temp_directory,'kevan_0_10'))
-			sub_dir_temp = os.path.join(temp_directory,'kevan_0_10')
-			os.popen('cp '+filepath+' '+ sub_dir_temp)
+			print (filepath)
+			if not os.path.exists(tmpdirISL + '/' + 'kevan_0_9'):
+				sub_dir_temp = os.mkdir(os.path.join(tmpdirISL,'kevan_0_9'))
+			os.popen('cp '+filepath+' '+ str(sub_dir_temp))
 
-	return temp_directory
+		elif entry.find('day-6,well-A1')>=0:
+			filepath = dataset_prediction+'/'+entry
+			print (filepath)
+			if not os.path.exists(tmpdirISL + '/' + 'kevan_0_10'):
+				sub_dir_temp = os.mkdir(os.path.join(tmpdirISL,'kevan_0_10'))
+			os.popen('cp '+filepath+' '+ str(sub_dir_temp))
+
+	return tmpdirISL
 
 def main():
 	""" First the script makes sure the Bazel has been shutdown properly. Then it starts the bazel command with the following arguments:
@@ -103,13 +108,13 @@ def main():
 	# cmd1 = [base_directory_path + 'bazel version;']
 	# process1 = subprocess.Popen(cmd1, shell=True, stdout=subprocess.PIPE)
 	# process1.wait()
-	temp_directory = image_feeder(configure.dataset_prediction)
+	tmpdir = image_feeder(configure.dataset_prediction)
 
-	print('\n',os.listdir(temp_directory),'\n')
+	print('\n',os.listdir(tmpdir),'\n')
 
 	# Loop through subfolders in the dataset folder
 
-	for folder in os.listdir(temp_directory):
+	for folder in os.listdir(tmpdir):
 
 		# use re.match
 		if str('kevan_0_') in folder:
