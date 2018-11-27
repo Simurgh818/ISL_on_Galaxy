@@ -1,3 +1,4 @@
+import com.sun.xml.internal.fastinfoset.util.CharArray;
 import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 import java.io.File;
@@ -45,18 +46,18 @@ public class Main {
 //                }
 ////
 //            }
-            String GuessInProgress = "";
-//                GuessInProgress = new String [];
-            StringBuilder GIP = new StringBuilder(GuessInProgress);
+//            String GuessInProgress = "";
+            char [] GuessInProgress = new char[ArrayMovies[number].length()];
+//            StringBuilder GIP = new StringBuilder(GuessInProgress);
             for (int j = 0; j < ArrayMovies[number].length(); j++) {
-                GIP.append('-');
+                GuessInProgress[j] = '-';
             }
-            System.out.println(GIP);
+            System.out.println(GuessInProgress);
             for (int i =10; i>0; i--){
                 System.out.println("Try to guess a letter. You have " + i + " trials left!");
                 Scanner scanner1 = new Scanner(System.in);
                 String guess = scanner1.next();
-                letters = guess.replace(" ", "").length();
+//                letters = guess.replace(" ", "").length();
                 char[] CharArrayMovies = ArrayMovies[number].toCharArray();
                 char[] CharGuess = guess.toCharArray();
 //                System.out.println(CharArrayMovies);
@@ -64,13 +65,13 @@ public class Main {
                 for (int j = 0; j < ArrayMovies[number].length(); j++) {
 //                    System.out.print(CharArrayMovies[j]);
                     if (CharGuess[0] == CharArrayMovies[j]) {
-                        GIP.replace(j,letters, guess);
+                        GuessInProgress[j] = CharGuess[0];
                     }
 //                    else {
 //                        GIP.replace(0, j,"-");
 //                    }
                 }
-                System.out.println(GIP);
+                System.out.println(GuessInProgress);
 //                    TheyWon = true;
 //                    break;
 //                } else {
