@@ -11,13 +11,14 @@ source /home/sinadabiri/venvs/tensorflow/SinaFlow/bin/activate;
 
 echo "Before Python";
 
-python3.6 /home/sinadabiri/galaxy-neuron-analysis/galaxy/tools/dev_staging_modules/ISL_predicting.py $crop_size $model_location $output_path $dataset_eval_path $infer_channels;
+python3.6 /home/sinadabiri/galaxy-neuron-analysis/galaxy/tools/dev_staging_modules/ISL_predicting.py $infile $crop_size $model_location $output_path $dataset_eval_path $infer_channels;
 <!-- $infile $outfile -->
 echo "End of Prediction";
 </command>
 
 <inputs>
 	<param name="infile" type="data" format="data" label="Local variables dictionary (output from 'Create Folders')."/>
+
 	<param name="crop_size" type="text" label="Select Crop Size between 285 and 1500." help="The default value is 1500. One can chose smaller value like 375 for faster processing." value = "300" />
 
 	<!-- /finkbeiner/imaging/smb-robodata/Sina/checkpoints -->

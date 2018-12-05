@@ -3,9 +3,9 @@
 
 import subprocess
 import argparse, pickle, os, sys
-sys.path.append('/mnt/finkbeinernas/robodata/Sina/ISL_Scripts')
+sys.path.append('/mnt/finkbeinernas/robodata/Sina/')
 import configure
-sys.path.append('/home/sinadabiri/galaxy-neuron-analysis/galaxy/tools/dev_staging_modules')
+# sys.path.append('/home/sinadabiri/galaxy-neuron-analysis/galaxy/tools/dev_staging_modules')
 # import utils
 # from background_removal_mp import get_image_token_list
 from datetime import datetime
@@ -13,7 +13,7 @@ from time import strftime
 import tempfile
 
 global temp_directory, dataset_prediction
-temp_directory = '/mnt/finkbeinernas/robodata/Sina/LogFiles/temp_directory'
+# temp_directory = '/home/sinadabiri/galaxy-new2/galaxy/database/tmp/'
 
 INPUT_PATH = ''
 ROBO_NUMBER = None
@@ -59,37 +59,47 @@ def image_feeder(dataset_prediction):
 			# 	os.mkdir(os.path.join(output_path,temp_directory))
 			# 	assert os.path.exists(temp_directory), 'Path to input images.'
 			# with os.scandir(dataset_prediction) as location:
-	tmpdirISL = tempfile.mkdtemp()
-	print('The created Temp Directory is: ', tmpdirISL,'\n')
+	temp_directory = tempfile.mkdtemp()
+	print('The created Temp Directory is: ', temp_directory,'\n')
+	print(temp_directory)
+	print('\n',os.listdir(configure.dataset_prediction),'\n')
 
-	for entry in os.listdir(dataset_prediction):
-		if entry.find('well-A4')>= 0 :
-			filepath = dataset_prediction+'/'+entry
-			print (filepath)
-			if not os.path.exists(tmpdirISL + '/' + 'kevan_0_8'):
-				sub_dir_temp = os.mkdir(os.path.join(tmpdirISL,'kevan_0_8'))
-			os.popen('cp '+filepath+' '+ str(sub_dir_temp))
+	for entry in os.listdir(configure.dataset_prediction):
+		if entry.find('kevan_0_8')>= 0 :
+			dataset_location = os.path.join(configure.dataset_prediction, entry)
+			print (dataset_location)
+			tmp_location = os.path.join(temp_directory,'kevan_0_8')
+			print(tmp_location)
+			# if not os.path.exists(tmp_location):
+			# 	os.mkdir(str(tmp_location))
+			os.popen('cp -r '+dataset_location+' '+ str(temp_directory)+';')
+
 				# print ('cp '+ dataset_prediction +'/' +os.path.join(entry)+' '+ sub_dir_temp+ ';')
 				# cmd0 = ['cp '+ dataset_prediction +'/' +entry+' '+ sub_dir_temp+ ';']
 				# process0 = subprocess.Popen(cmd0, shell=True, stdout=subprocess.PIPE)
 				# process0.wait()
 				# print(entry.name)
 
-		elif entry.find('day-2,well-A1')>=0:
-			filepath = dataset_prediction+'/'+entry
-			print (filepath)
-			if not os.path.exists(tmpdirISL + '/' + 'kevan_0_9'):
-				sub_dir_temp = os.mkdir(os.path.join(tmpdirISL,'kevan_0_9'))
-			os.popen('cp '+filepath+' '+ str(sub_dir_temp))
+		elif entry.find('kevan_0_9')>=0:
+			dataset_location = os.path.join(configure.dataset_prediction, entry)
+			print (dataset_location)
+			tmp_location = os.path.join(temp_directory,'kevan_0_9')
+			print(tmp_location)
+			# if not os.path.exists(tmp_location):
+			# 	os.mkdir(str(tmp_location))
+			os.popen('cp -r '+dataset_location+' '+ str(temp_directory)+';')
 
-		elif entry.find('day-6,well-A1')>=0:
-			filepath = dataset_prediction+'/'+entry
-			print (filepath)
-			if not os.path.exists(tmpdirISL + '/' + 'kevan_0_10'):
-				sub_dir_temp = os.mkdir(os.path.join(tmpdirISL,'kevan_0_10'))
-			os.popen('cp '+filepath+' '+ str(sub_dir_temp))
+		elif entry.find('kevan_0_10')>=0:
+			dataset_location = os.path.join(configure.dataset_prediction, entry)
+			print (dataset_location)
+			tmp_location = os.path.join(temp_directory,'kevan_0_10')
+			print(tmp_location)
+			# if not os.path.exists(tmp_location):
+			# 	os.mkdir(str(tmp_location))
+			os.popen('cp -r '+dataset_location+' '+ str(temp_directory)+';')
 
-	return tmpdirISL
+	print('\n',os.listdir(temp_directory),'\n')
+	return temp_directory;
 
 def main():
 	""" First the script makes sure the Bazel has been shutdown properly. Then it starts the bazel command with the following arguments:
@@ -108,16 +118,16 @@ def main():
 	# cmd1 = [base_directory_path + 'bazel version;']
 	# process1 = subprocess.Popen(cmd1, shell=True, stdout=subprocess.PIPE)
 	# process1.wait()
-	tmpdir = image_feeder(configure.dataset_prediction)
+	temp_directory = image_feeder(configure.dataset_prediction)
 
-	print('\n',os.listdir(tmpdir),'\n')
+	print('\n',temp_directory,'\n')
 
 	# Loop through subfolders in the dataset folder
 
-	for folder in os.listdir(tmpdir):
+	for folder in os.listdir(configure.dataset_prediction):
 
 		# use re.match
-		if str('kevan_0_') in folder:
+		if str('kevan_') in folder:
 			#Running Bazel for prediction. Note txt log files are also being created incase troubleshooting is needed.
 			date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
 			dataset_eval_path = str(os.path.join(temp_directory, folder))
@@ -140,8 +150,8 @@ def main():
 			--infer_channel_whitelist ' + infer_channels + ' \
 			--error_panels False \
 			--infer_simplify_error_panels \
-			> ' + output_path + '/predicting_output_'+ mod + '_'+ date_time +'_'+ crop_size +'_'+ folder + '_images.txt \
-			2> ' + output_path + '/predicting_error_'+ mod + '_'+ date_time +'_'+ crop_size + '_'+ folder + '_images.txt;']
+			> ' + OUTPUT_PATH + '/predicting_output_'+ mod + '_'+ date_time +'_'+ crop_size +'_'+ folder + '_images.txt \
+			2> ' + OUTPUT_PATH + '/predicting_error_'+ mod + '_'+ date_time +'_'+ crop_size + '_'+ folder + '_images.txt;']
 
 			process = subprocess.Popen(baz_cmd, shell=True, stdout=subprocess.PIPE)
 			process.wait()
@@ -165,7 +175,7 @@ if __name__ == '__main__':
 
   # ----Parser-----------------------
 	parser = argparse.ArgumentParser(description="ISL Predicting.")
-	# parser.add_argument("input_dict", help="Load input variable dictionary")
+	parser.add_argument("input_dict", help="Load input variable dictionary")
 	parser.add_argument("crop_size", help="Image Crop Size.")
 	parser.add_argument("model_location", help="Model Location.")
 	parser.add_argument("output_path", help="Output Image Folder location.")
@@ -176,11 +186,13 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 
 	# ----Load path dict-------------------------
-	# infile = args.input_dict
-	# var_dict = pickle.load(open(infile, 'rb'))
-	# bg_well = str.strip(args.chosen_bg_well) if args.chosen_bg_well else None
+	infile = args.input_dict
+	var_dict = pickle.load(open(infile, 'rb'))
+
 
   # ----Initialize parameters------------------
+	# bg_well = str.strip(args.chosen_bg_well) if args.chosen_bg_well else None
+
 	crop_size = args.crop_size
 	model_location = args.model_location
 	output_path = args.output_path
@@ -195,6 +207,7 @@ if __name__ == '__main__':
 	# IMAGING_MODE = var_dict['ImagingMode']
 	# VALID_WELLS = var_dict['Wells']
 	# VALID_TIMEPOINTS = var_dict['TimePoints']
+
 	# outfile = args.output_dict
 
 	if model_location != '':
