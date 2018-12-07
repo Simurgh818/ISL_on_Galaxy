@@ -22,6 +22,7 @@ import os
 
 import numpy as np
 import tensorflow as tf
+import cv2
 from typing import List, Optional
 
 # pylint: disable=g-bad-import-order
@@ -30,6 +31,8 @@ from isl import data_provider
 from isl import ops
 from isl import util
 from isl import visualize
+from datetime import datetime
+from time import strftime
 
 gfile = tf.gfile
 logging = tf.logging
@@ -73,6 +76,8 @@ def infer(
       3) The graph must not contain queues.
   """
   rpp = gitapp.dp.io_parameters
+  # Sina testing
+  print(rpp.directory)
   if not isinstance(rpp, data_provider.ReadPNGsParameters):
     raise ValueError(
         'Data provider must contain a ReadPNGsParameter, but was: %r',
@@ -95,14 +100,15 @@ def infer(
   logging.info('After cropping, input image size is (%d, %d)', image_num_rows,
                image_num_columns)
 
-  # Sina Troubleshooting: 
-  print('image_num_rows, extract_patch_size, image_num_rows - extract_patch_size', image_num_rows, extract_patch_size, image_num_rows - extract_patch_size) 
+  # Sina Troubleshooting:
+  print('image_num_rows, extract_patch_size, image_num_rows - extract_patch_size', image_num_rows, extract_patch_size, image_num_rows - extract_patch_size)
   print('stitch_stride, infer_size, stitch_stride * infer_size', stitch_stride, infer_size, stitch_stride * infer_size)
 
   num_row_inferences = (image_num_rows - extract_patch_size) // (
       stitch_stride * infer_size)
-  num_column_inferences = (image_num_columns - extract_patch_size) // (
-      stitch_stride * infer_size)
+  num_column_inferences = (image_num_columns - extract_patch_size) // (stitch_stride * infer_size)
+
+  print('num_column_inferences', num_column_inferences)
   logging.info('Running %d x %d inferences', num_row_inferences,
                num_column_inferences)
   num_output_rows = (num_row_inferences * infer_size * stitch_stride)
@@ -264,17 +270,17 @@ def infer(
                   column_start: cs
               })
 
-          # Sina Troubleshooting: 
+          # Sina Troubleshooting:
           print('inpt =', inpt)
 
           input_row.append(inpt)
           predict_input_row.append(predict_input)
           target_row.append(target)
           predict_target_row.append(predict_target)
-        
-        # Sina Troubleshooting: 
+
+        # Sina Troubleshooting:
         print('Input row =', input_row)
-        
+
         input_rows.append(np.concatenate(input_row, axis=2))
         predict_input_rows.append(np.concatenate(predict_input_row, axis=2))
         target_rows.append(np.concatenate(target_row, axis=2))
@@ -282,7 +288,7 @@ def infer(
 
       logging.info('Stitching')
 
-      
+
       stitched_input = np.concatenate(input_rows, axis=1)
       stitched_predict_input = np.concatenate(predict_input_rows, axis=1)
       stitched_target = np.concatenate(target_rows, axis=1)
@@ -304,8 +310,14 @@ def infer(
               predict_target_lt: stitched_predict_target,
           })
       # Sina testing
-      print(target_error_panel)
-      output_directory = os.path.join(output_directory, '%.8d' % global_step)
+      Val1, row, column, Val2 = target_error_panel.shape
+      print("column: ", column, "row: ", row, Val1, Val2)
+
+      date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
+      print(rpp.directory.split('/')[-1])
+
+      output_folder_name = '%.8d' % global_step + '_' + rpp.directory.split('/')[-1] + '_' + date_time
+      output_directory = os.path.join(output_directory, output_folder_name)
       if not gfile.Exists(output_directory):
         gfile.MakeDirs(output_directory)
 
@@ -313,11 +325,21 @@ def infer(
           os.path.join(output_directory, 'input_error_panel.png'),
           input_error_panel[0, :, :, :])
       util.write_image(
-          os.path.join(output_directory, 'target_error_panel.tif'),
+          os.path.join(output_directory, 'target_error_panel.png'),
           target_error_panel[0, :, :, :])
-      
-      util.write_image(
-          os.path.join(output_directory, 'prediction_panel.tif'),
-          target_error_panel[0,:, 0:(image_num_columns//(num_column_inferences-1)), :])
-        # target_error_panel[0, :, :, :]
+
+      Val1, row, column, Val2 = target_error_panel.shape
+
+      prediction_part = (column//3)
+      target_error_panel_prediction = target_error_panel[0,:, 0:prediction_part, :]
+      path = str(os.path.join(output_directory,'ISL_prediction_panel.png'))
+      target_error_panel_prediction = cv2.imread(path, -1)
+      print(target_error_panel)
+      base = os.path.splitext('ISL_prediction_panel.png')[0]
+      # print(base)
+      New_file_name= output_directory+'/'+base+'.tif'
+      # target_error_panel_tif = cv2.imwrite(New_file_name,target_error_panel)
+      # print(target_error_panel_tif)
+      util.write_image(New_file_name,target_error_panel_prediction)
+
       logging.info('Done generating images')

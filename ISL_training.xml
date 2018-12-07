@@ -4,19 +4,20 @@
 
 	<command>
 		<!-- <command interpreter="bash"> -->
-<!-- /home/sinadabiri/venvs/tensorflow/SinaFlow/bin/activate
-/home/sinadabiri/galaxy-neuron-analysis/galaxy -->
+<!-- /finkbeiner/imaging/home/fbgalaxy/.virtualenvs/insilico/bin/activate
+/finkbeiner/imaging/home/galaxy -->
 
-source /finkbeiner/imaging/home/fbgalaxy/.virtualenvs/insilico/bin/activate;
+source /home/sinadabiri/venvs/tensorflow/SinaFlow/bin/activate;
 
 echo "Before Python";
 
-python3.6 /finkbeiner/imaging/home/galaxy/tools/dev_staging_modules/ISL_training.py $dataset_train_path $model_location $output_path $until_step $outfile;
+python3.6 /home/sinadabiri/galaxy-neuron-analysis/galaxy/tools/dev_staging_modules/ISL_training.py $infile $dataset_train_path $model_location $output_path $until_step $outfile;
 
 echo "End of Training";
 </command>
 
 <inputs>
+	<param name="infile" type="data" format="data" label="Local variables dictionary (output from 'Create Folders')."/>
 
 	<!-- /finkbeiner/imaging/smb-robodata/Sina/data_sample/condition_e_sample_B2 -->
 	<param name="dataset_train_path" type="text" format="text" label="Specify path for training data images." value='/finkbeiner/imaging/home/in-silico/datasets/condition_e_sample_B2' help="For example: /finkbeiner/imaging/smb-robodata/Sina/data_sample/condition_e_sample_B2" size="70" />

@@ -11,6 +11,8 @@ import configure
 from datetime import datetime
 from time import strftime
 import tempfile
+import cv2
+import numpy as np
 
 global temp_directory, dataset_prediction
 # temp_directory = '/home/sinadabiri/galaxy-new2/galaxy/database/tmp/'
@@ -53,7 +55,6 @@ def image_feeder(dataset_prediction):
 			# remove empty lists for non-matching channels (couldn't figure out how to do it in the above list comprehension)
 			# image_stack_list_ch = [x for x in image_stack_list_ch if x]
 
-			# Add the code to copy one z-stack to tempfile, and then to send the temp folder to bazel for prediction
 
 			# if os.path.exists(temp_directory):
 			# 	os.mkdir(os.path.join(output_path,temp_directory))
@@ -65,40 +66,82 @@ def image_feeder(dataset_prediction):
 	print('\n',os.listdir(configure.dataset_prediction),'\n')
 
 	for entry in os.listdir(configure.dataset_prediction):
-		if entry.find('kevan_0_8')>= 0 :
+		if entry.find('B3')>= 0 :
 			dataset_location = os.path.join(configure.dataset_prediction, entry)
-			print (dataset_location)
-			tmp_location = os.path.join(temp_directory,'kevan_0_8')
+			# print (dataset_location)
+			tmp_location = os.path.join(temp_directory,'B3')
 			print(tmp_location)
-			# if not os.path.exists(tmp_location):
-			# 	os.mkdir(str(tmp_location))
 			os.popen('cp -r '+dataset_location+' '+ str(temp_directory)+';')
+			image = [np.zeros((2048,2048),np.uint16)]*375
+			path = ''
+			k=0
+			New_file_name = []
+			# print('\n',dataset_location)
+			for img in os.listdir(dataset_location):
+				# print(img)
+				if img.find('.tif')>=0:
+					path = str(os.path.join(dataset_location, img))
+					image[k] = cv2.imread(path,-1)
+					# print(image[k])
+					base = os.path.splitext(img)[0]
+					New_file_name= str(tmp_location)+'/'+base+'.png'
+					image[k] = cv2.imwrite(New_file_name,image[k])
+					# print(New_file_name)
+					k+=1
+				else:
+					continue
 
-				# print ('cp '+ dataset_prediction +'/' +os.path.join(entry)+' '+ sub_dir_temp+ ';')
-				# cmd0 = ['cp '+ dataset_prediction +'/' +entry+' '+ sub_dir_temp+ ';']
-				# process0 = subprocess.Popen(cmd0, shell=True, stdout=subprocess.PIPE)
-				# process0.wait()
-				# print(entry.name)
-
-		elif entry.find('kevan_0_9')>=0:
+		elif entry.find('E4')>=0:
 			dataset_location = os.path.join(configure.dataset_prediction, entry)
-			print (dataset_location)
-			tmp_location = os.path.join(temp_directory,'kevan_0_9')
+			# print (dataset_location)
+			tmp_location = os.path.join(temp_directory,'E4')
 			print(tmp_location)
-			# if not os.path.exists(tmp_location):
-			# 	os.mkdir(str(tmp_location))
 			os.popen('cp -r '+dataset_location+' '+ str(temp_directory)+';')
+			image = [np.zeros((2048,2048),np.uint16)]*375
+			path = ''
+			k=0
+			New_file_name = []
+			# print('\n',dataset_location)
+			for img in os.listdir(dataset_location):
+				# print(img)
+				if img.find('.tif')>=0:
+					path = str(os.path.join(dataset_location, img))
+					image[k] = cv2.imread(path,-1)
+					# print(image[k])
+					base = os.path.splitext(img)[0]
+					New_file_name= str(tmp_location)+'/'+base+'.png'
+					image[k] = cv2.imwrite(New_file_name,image[k])
+					# print(New_file_name)
+					k+=1
+				else:
+					continue
 
-		elif entry.find('kevan_0_10')>=0:
+		elif entry.find('G2')>=0:
 			dataset_location = os.path.join(configure.dataset_prediction, entry)
-			print (dataset_location)
-			tmp_location = os.path.join(temp_directory,'kevan_0_10')
+			# print (dataset_location)
+			tmp_location = os.path.join(temp_directory,'G2')
 			print(tmp_location)
-			# if not os.path.exists(tmp_location):
-			# 	os.mkdir(str(tmp_location))
 			os.popen('cp -r '+dataset_location+' '+ str(temp_directory)+';')
+			image = [np.zeros((2048,2048),np.uint16)]*375
+			path = ''
+			k=0
+			New_file_name = []
+			# print('\n',dataset_location)
+			for img in os.listdir(dataset_location):
+				# print(img)
+				if img.find('.tif')>=0:
+					path = str(os.path.join(dataset_location, img))
+					image[k] = cv2.imread(path,-1)
+					# print(image[k])
+					base = os.path.splitext(img)[0]
+					New_file_name= str(tmp_location)+'/'+base+'.png'
+					image[k] = cv2.imwrite(New_file_name,image[k])
+					# print(New_file_name)
+					k+=1
+				else:
+					continue
 
-	print('\n',os.listdir(temp_directory),'\n')
+	print('\n',"The temporary directory subfolders are: ", os.listdir(temp_directory),'\n')
 	return temp_directory;
 
 def main():
@@ -124,10 +167,10 @@ def main():
 
 	# Loop through subfolders in the dataset folder
 
-	for folder in os.listdir(configure.dataset_prediction):
+	for folder in os.listdir(temp_directory):
 
 		# use re.match
-		if str('kevan_') in folder:
+		if (str('B3') or str('E4') or str('G2')) in folder:
 			#Running Bazel for prediction. Note txt log files are also being created incase troubleshooting is needed.
 			date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
 			dataset_eval_path = str(os.path.join(temp_directory, folder))

@@ -62,10 +62,8 @@ flags.DEFINE_string('master', 'local',
                     'BNS name of the TensorFlow master to use.')
 flags.DEFINE_string('base_directory', '/tmp/minception/',
                     'Directory where model checkpoints are written.')
-
 flags.DEFINE_string('output_path', '/tmp/output_path/',
                     'Directory where model outputs are written.')
-
 flags.DEFINE_string('export_directory', '/tmp/minception_export/',
                     'Directory where exported model is written.')
 flags.DEFINE_integer(
@@ -151,6 +149,10 @@ flags.DEFINE_bool('infer_continuously', False,
                   'Whether to run inference in a while loop.')
 flags.DEFINE_string('infer_channel_whitelist', None,
                     'If provided, the channels to whitelist for inference.')
+
+flags.DEFINE_bool('error_panels', False,
+                  'Whether to show the error panels.')
+
 flags.DEFINE_bool('infer_simplify_error_panels', True,
                   'Whether to simplify the error panels.')
 
@@ -210,7 +212,7 @@ def get_z_values() -> List[float]:
 
 
 INPUT_CHANNEL_VALUES = [
-    'BRIGHTFIELD',
+    'Brightfield',
     'PHASE_CONTRAST',
     'DIC',
 ]
@@ -369,7 +371,7 @@ def parameters() -> controller.GetInputTargetAndPredictedParameters:
 
 def train_directory() -> str:
   """The directory where the training data is written."""
-  return os.path.join(FLAGS.output_path, 'train')
+  return os.path.join(FLAGS.base_directory, 'train')
 
 
 def output_directory() -> str:
@@ -391,7 +393,7 @@ def output_directory() -> str:
     else:
       suffix = 'stitch'
 
-    return os.path.join(FLAGS.output_path, prefix + suffix)
+    return os.path.join(FLAGS.base_directory, prefix + suffix)
 
 
 def total_loss(
@@ -568,6 +570,7 @@ def infer_single_image(gitapp: controller.GetInputTargetAndPredictedParameters):
         stitch_stride=CONCORDANCE_STITCH_STRIDE,
         infer_size=FLAGS.infer_size,
         channel_whitelist=infer_channel_whitelist,
+        error_panels=FLAGS.error_panels,
         simplify_error_panels=FLAGS.infer_simplify_error_panels,
     )
     if not FLAGS.infer_continuously:
