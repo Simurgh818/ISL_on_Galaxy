@@ -331,15 +331,20 @@ def infer(
       Val1, row, column, Val2 = target_error_panel.shape
 
       prediction_part = (column//3)
-      target_error_panel_prediction = target_error_panel[0,:, 0:prediction_part, :]
-      path = str(os.path.join(output_directory,'ISL_prediction_panel.png'))
-      target_error_panel_prediction = cv2.imread(path, -1)
-      print(target_error_panel)
-      base = os.path.splitext('ISL_prediction_panel.png')[0]
-      # print(base)
-      New_file_name= output_directory+'/'+base+'.tif'
-      # target_error_panel_tif = cv2.imwrite(New_file_name,target_error_panel)
-      # print(target_error_panel_tif)
-      util.write_image(New_file_name,target_error_panel_prediction)
+      util.write_image(
+          os.path.join(output_directory, 'prediction_panel.png'),
+          target_error_panel[0,:, 0:prediction_part, :])
+      # target_error_panel_prediction = target_error_panel[0,:, 0:prediction_part, :]
+      # path = str(os.path.join(output_directory,'ISL_prediction_panel.png'))
+      # cv2.imwrite(path,target_error_panel_prediction)
+
+      # target_error_panel_prediction = cv2.imread(path, -1)
+      # print(target_error_panel)
+      # base = os.path.splitext('ISL_prediction_panel.png')[0]
+      # # print(base)
+      # New_file_name= output_directory+'/'+base+'.tif'
+      # # target_error_panel_tif = cv2.imwrite(New_file_name,target_error_panel)
+      # # print(target_error_panel_tif)
+      # util.write_image(New_file_name,target_error_panel_prediction)
 
       logging.info('Done generating images')

@@ -45,7 +45,7 @@ ImageMetadata = NamedTuple('ImageMetadata', [
 
 def parse_image_path(path: str) -> ImageMetadata:
   """Parses an image path into an ImageMetadata."""
-  z_pattern = re.compile(r'.*Transmission-Brightfield_0_(\d+).*')
+  z_pattern = re.compile(r'.*_0_(\d+)_1.*')
   if 'value-MAXPROJECT' in path:
     z = 'MAXPROJECT'
   else:
@@ -59,7 +59,7 @@ def parse_image_path(path: str) -> ImageMetadata:
   # print(match)
   if not match:
     raise ValueError('Failed to match channel in path: %s', path)
-  channel = match.group(1)
+  channel = match.group(0)
 
   return ImageMetadata(z, channel)
 
@@ -85,7 +85,6 @@ def num_z_values(ims: List[ImageMetadata]) -> int:
       z_values.append(im.z)
 
   num_z = len(set(z_values))
-  print('\n',num_z,'\n')
   if sorted(list(set(z_values))) != list(range(num_z)):
     raise ValueError('Invalid z values: %r', sorted(list(set(z_values))))
 
