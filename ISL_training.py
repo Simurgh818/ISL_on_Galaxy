@@ -224,7 +224,7 @@ def main():
   parser.add_argument("until_step", help="Train till step number mentioned.")
   parser.add_argument("outfile", help="Folder path to images directory.")
   args = parser.parse_args()
-  args = parser.parse_args()
+
 
   # ----Load path dict-------------------------
   infile = args.input_dict

@@ -70,21 +70,27 @@ def image_feeder(dataset_prediction):
 			dataset_location = os.path.join(configure.dataset_prediction, entry)
 			# print (dataset_location)
 			tmp_location = os.path.join(temp_directory,'B3')
+			os.mkdir(tmp_location)
 			print(tmp_location)
-			os.popen('cp -r '+dataset_location+' '+ str(temp_directory)+';')
-			image = [np.zeros((2048,2048),np.uint16)]*375
+			# tmp_location is better
+			# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
+			image = [np.zeros((2048,2048),np.uint16)]*480
 			path = ''
 			k=0
 			New_file_name = []
 			# print('\n',dataset_location)
 			for img in os.listdir(dataset_location):
 				# print(img)
+				# if img.find('_BRIGHTFIELD_')>=0:
+				# 	os.popen('cp '+dataset_location+'/'+img+' ' + str(tmp_location)+'/'+img+';')
 				if img.find('.tif')>=0:
 					path = str(os.path.join(dataset_location, img))
 					image[k] = cv2.imread(path,-1)
 					# print(image[k])
 					base = os.path.splitext(img)[0]
 					New_file_name= str(tmp_location)+'/'+base+'.png'
+					# path = os.rename(path, New_file_name)
+					# os.popen('mv '+path+' '+ New_file_name+';')
 					image[k] = cv2.imwrite(New_file_name,image[k])
 					# print(New_file_name)
 					k+=1
@@ -95,15 +101,18 @@ def image_feeder(dataset_prediction):
 			dataset_location = os.path.join(configure.dataset_prediction, entry)
 			# print (dataset_location)
 			tmp_location = os.path.join(temp_directory,'E4')
+			os.mkdir(tmp_location)
 			print(tmp_location)
-			os.popen('cp -r '+dataset_location+' '+ str(temp_directory)+';')
-			image = [np.zeros((2048,2048),np.uint16)]*375
+			# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
+			image = [np.zeros((2048,2048),np.uint16)]*480
 			path = ''
 			k=0
 			New_file_name = []
 			# print('\n',dataset_location)
 			for img in os.listdir(dataset_location):
 				# print(img)
+				# if img.find('_BRIGHTFIELD_')>=0:
+				# 	os.popen('cp '+dataset_location+'/'+img+ ' ' + str(tmp_location)+';')
 				if img.find('.tif')>=0:
 					path = str(os.path.join(dataset_location, img))
 					image[k] = cv2.imread(path,-1)
@@ -120,15 +129,18 @@ def image_feeder(dataset_prediction):
 			dataset_location = os.path.join(configure.dataset_prediction, entry)
 			# print (dataset_location)
 			tmp_location = os.path.join(temp_directory,'G2')
+			os.mkdir(tmp_location)
 			print(tmp_location)
-			os.popen('cp -r '+dataset_location+' '+ str(temp_directory)+';')
-			image = [np.zeros((2048,2048),np.uint16)]*375
+			# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
+			image = [np.zeros((2048,2048),np.uint16)]*480
 			path = ''
 			k=0
 			New_file_name = []
 			# print('\n',dataset_location)
 			for img in os.listdir(dataset_location):
 				# print(img)
+				# if img.find('_BRIGHTFIELD_')>=0:
+				# 	os.popen('cp '+dataset_location+'/'+img+ ' ' + str(tmp_location)+';')
 				if img.find('.tif')>=0:
 					path = str(os.path.join(dataset_location, img))
 					image[k] = cv2.imread(path,-1)
@@ -136,6 +148,7 @@ def image_feeder(dataset_prediction):
 					base = os.path.splitext(img)[0]
 					New_file_name= str(tmp_location)+'/'+base+'.png'
 					image[k] = cv2.imwrite(New_file_name,image[k])
+					# os.popen('mv '+path+' '+ New_file_name+';')
 					# print(New_file_name)
 					k+=1
 				else:
@@ -170,7 +183,7 @@ def main():
 	for folder in os.listdir(temp_directory):
 
 		# use re.match
-		if (str('B3') or str('E4') or str('G2')) in folder:
+		if folder.find('')>=0:
 			#Running Bazel for prediction. Note txt log files are also being created incase troubleshooting is needed.
 			date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
 			dataset_eval_path = str(os.path.join(temp_directory, folder))
