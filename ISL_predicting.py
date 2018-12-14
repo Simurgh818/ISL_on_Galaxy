@@ -2,7 +2,7 @@
 '''
 
 import subprocess
-import argparse, pickle, os, sys
+import argparse, pickle, os, sys, shutil
 sys.path.append('/mnt/finkbeinernas/robodata/Sina/')
 import configure
 # sys.path.append('/home/sinadabiri/galaxy-neuron-analysis/galaxy/tools/dev_staging_modules')
@@ -60,21 +60,22 @@ def image_feeder(dataset_prediction):
 			# 	os.mkdir(os.path.join(output_path,temp_directory))
 			# 	assert os.path.exists(temp_directory), 'Path to input images.'
 			# with os.scandir(dataset_prediction) as location:
+
 	temp_directory = tempfile.mkdtemp()
 	print('The created Temp Directory is: ', temp_directory,'\n')
 	print(temp_directory)
 	print('\n',os.listdir(configure.dataset_prediction),'\n')
 
 	for entry in os.listdir(configure.dataset_prediction):
-		if entry.find('B3')>= 0 :
+		if entry.find('scott_1_0')>= 0 :
 			dataset_location = os.path.join(configure.dataset_prediction, entry)
 			# print (dataset_location)
-			tmp_location = os.path.join(temp_directory,'B3')
+			tmp_location = os.path.join(temp_directory,'scott_1_0')
 			os.mkdir(tmp_location)
 			print(tmp_location)
 			# tmp_location is better
 			# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
-			image = [np.zeros((2048,2048),np.uint16)]*480
+			image = [np.zeros((4622,4622),np.int16)]*15
 			path = ''
 			k=0
 			New_file_name = []
@@ -83,9 +84,10 @@ def image_feeder(dataset_prediction):
 				# print(img)
 				# if img.find('_BRIGHTFIELD_')>=0:
 				# 	os.popen('cp '+dataset_location+'/'+img+' ' + str(tmp_location)+'/'+img+';')
+				path = str(os.path.join(dataset_location, img))
+				tmp_location_img = str(os.path.join(tmp_location, img))
 				if img.find('.tif')>=0:
-					path = str(os.path.join(dataset_location, img))
-					image[k] = cv2.imread(path,-1)
+					image[k] = cv2.imread(path,2)
 					# print(image[k])
 					base = os.path.splitext(img)[0]
 					New_file_name= str(tmp_location)+'/'+base+'.png'
@@ -95,64 +97,65 @@ def image_feeder(dataset_prediction):
 					# print(New_file_name)
 					k+=1
 				else:
-					continue
+					os.popen('cp '+path+' ' + tmp_location_img+';')
 
-		elif entry.find('E4')>=0:
-			dataset_location = os.path.join(configure.dataset_prediction, entry)
-			# print (dataset_location)
-			tmp_location = os.path.join(temp_directory,'E4')
-			os.mkdir(tmp_location)
-			print(tmp_location)
-			# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
-			image = [np.zeros((2048,2048),np.uint16)]*480
-			path = ''
-			k=0
-			New_file_name = []
-			# print('\n',dataset_location)
-			for img in os.listdir(dataset_location):
-				# print(img)
-				# if img.find('_BRIGHTFIELD_')>=0:
-				# 	os.popen('cp '+dataset_location+'/'+img+ ' ' + str(tmp_location)+';')
-				if img.find('.tif')>=0:
-					path = str(os.path.join(dataset_location, img))
-					image[k] = cv2.imread(path,-1)
-					# print(image[k])
-					base = os.path.splitext(img)[0]
-					New_file_name= str(tmp_location)+'/'+base+'.png'
-					image[k] = cv2.imwrite(New_file_name,image[k])
-					# print(New_file_name)
-					k+=1
-				else:
-					continue
 
-		elif entry.find('G2')>=0:
-			dataset_location = os.path.join(configure.dataset_prediction, entry)
-			# print (dataset_location)
-			tmp_location = os.path.join(temp_directory,'G2')
-			os.mkdir(tmp_location)
-			print(tmp_location)
-			# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
-			image = [np.zeros((2048,2048),np.uint16)]*480
-			path = ''
-			k=0
-			New_file_name = []
-			# print('\n',dataset_location)
-			for img in os.listdir(dataset_location):
-				# print(img)
-				# if img.find('_BRIGHTFIELD_')>=0:
-				# 	os.popen('cp '+dataset_location+'/'+img+ ' ' + str(tmp_location)+';')
-				if img.find('.tif')>=0:
-					path = str(os.path.join(dataset_location, img))
-					image[k] = cv2.imread(path,-1)
-					# print(image[k])
-					base = os.path.splitext(img)[0]
-					New_file_name= str(tmp_location)+'/'+base+'.png'
-					image[k] = cv2.imwrite(New_file_name,image[k])
-					# os.popen('mv '+path+' '+ New_file_name+';')
-					# print(New_file_name)
-					k+=1
-				else:
-					continue
+		# elif entry.find('kevan_0_9')>=0:
+		# 	dataset_location = os.path.join(configure.dataset_prediction, entry)
+		# 	# print (dataset_location)
+		# 	tmp_location = os.path.join(temp_directory,'kevan_0_9')
+		# 	os.mkdir(tmp_location)
+		# 	print(tmp_location)
+		# 	# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
+		# 	image = [np.zeros((2048,2048),np.uint16)]*480
+		# 	path = ''
+		# 	k=0
+		# 	New_file_name = []
+		# 	# print('\n',dataset_location)
+		# 	for img in os.listdir(dataset_location):
+		# 		# print(img)
+		# 		# if img.find('_BRIGHTFIELD_')>=0:
+		# 		# 	os.popen('cp '+dataset_location+'/'+img+ ' ' + str(tmp_location)+';')
+		# 		if img.find('.tif')>=0:
+		# 			path = str(os.path.join(dataset_location, img))
+		# 			image[k] = cv2.imread(path,-1)
+		# 			# print(image[k])
+		# 			base = os.path.splitext(img)[0]
+		# 			New_file_name= str(tmp_location)+'/'+base+'.png'
+		# 			image[k] = cv2.imwrite(New_file_name,image[k])
+		# 			# print(New_file_name)
+		# 			k+=1
+		# 		else:
+		# 			os.popen('cp '+dataset_location+'/'+img+' ' + str(tmp_location)+'/'+img+';')
+
+		# elif entry.find('kevan_0_10')>=0:
+		# 	dataset_location = os.path.join(configure.dataset_prediction, entry)
+		# 	# print (dataset_location)
+		# 	tmp_location = os.path.join(temp_directory,'kevan_0_10')
+		# 	os.mkdir(tmp_location)
+		# 	print(tmp_location)
+		# 	# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
+		# 	image = [np.zeros((2048,2048),np.uint16)]*480
+		# 	path = ''
+		# 	k=0
+		# 	New_file_name = []
+		# 	# print('\n',dataset_location)
+		# 	for img in os.listdir(dataset_location):
+		# 		# print(img)
+		# 		# if img.find('_BRIGHTFIELD_')>=0:
+		# 		# 	os.popen('cp '+dataset_location+'/'+img+ ' ' + str(tmp_location)+';')
+		# 		if img.find('.tif')>=0:
+		# 			path = str(os.path.join(dataset_location, img))
+		# 			image[k] = cv2.imread(path,-1)
+		# 			# print(image[k])
+		# 			base = os.path.splitext(img)[0]
+		# 			New_file_name= str(tmp_location)+'/'+base+'.png'
+		# 			image[k] = cv2.imwrite(New_file_name,image[k])
+		# 			# os.popen('mv '+path+' '+ New_file_name+';')
+		# 			# print(New_file_name)
+		# 			k+=1
+		# 		else:
+		# 			os.popen('cp '+dataset_location+'/'+img+' ' + str(tmp_location)+'/'+img+';')
 
 	print('\n',"The temporary directory subfolders are: ", os.listdir(temp_directory),'\n')
 	return temp_directory;
@@ -168,7 +171,73 @@ def main():
 	infer_channels: The microscope inference channels.
 
 	"""
+	#Receiving the variables from the XML script, parse them, initialize them, and verify the paths exist.
 
+	# ----Parser-----------------------
+	parser = argparse.ArgumentParser(description="ISL Predicting.")
+	parser.add_argument("infile", help="Load input variable dictionary")
+	parser.add_argument("crop_size", help="Image Crop Size.")
+	parser.add_argument("model_location", help="Model Location.")
+	parser.add_argument("output_path", help="Output Image Folder location.")
+	parser.add_argument("dataset_eval_path", help="Folder path to images directory.")
+	parser.add_argument("infer_channels", help="Channel Inferences.")
+	# parser.add_argument("outfile", help="Name of output dictionary.")
+	args = parser.parse_args()
+
+	# ----Load path dict-------------------------
+	infile = args.infile
+	var_dict = pickle.load(open(infile, 'rb'))
+
+
+  # ----Initialize parameters------------------
+	# bg_well = str.strip(args.chosen_bg_well) if args.chosen_bg_well else None
+
+	crop_size = args.crop_size
+	model_location = args.model_location
+	output_path = args.output_path
+	dataset_eval_path = args.dataset_eval_path
+	infer_channels = args.infer_channels
+	# outfile = args.outfile
+	pickle.dump(var_dict, open('var_dict.p', 'wb'))
+	# outfile = shutil.move('var_dict.p', outfile)
+
+	INPUT_PATH = args.dataset_eval_path
+	OUTPUT_PATH = args.output_path
+
+	# BG_WELL = bg_well
+	# ROBO_NUMBER = int(var_dict['RoboNumber'])
+	# IMAGING_MODE = var_dict['ImagingMode']
+	# VALID_WELLS = var_dict['Wells']
+	# VALID_TIMEPOINTS = var_dict['TimePoints']
+
+
+
+	if model_location != '':
+		model_location = '--restore_directory ' + configure.model_location
+		mod = 'ISL-Model'
+	else:
+		model_location = ''
+		mod = 'Your-Model'
+
+	# ----Confirm given folders exist--
+	if not os.path.exists(dataset_eval_path):
+		print('Confirm the given path to input images (transmitted images used to generate prediction image) exists.')
+		assert os.path.exists(dataset_eval_path), 'Path to input images (transmitted images used to generate prediction image).'
+		if not os.path.exists(output_path):
+			print('Confirm the given path to output of prediction for fluorescent and validation images exists.')
+
+			assert os.path.abspath(output_path) != os.path.abspath(dataset_eval_path) , 'Please provide a unique data path.'
+			assert os.path.abspath(output_path) != os.path.abspath(model_location),  'Please provide a unique model path.'
+
+			date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
+
+			print('\n The Evaluation Directory is:')
+			print(dataset_eval_path)
+			print('\n The Output Directory is:')
+			print(output_path)
+			print('\n ')
+
+		# temp_directory = image_feeder(configure.dataset_prediction)
 	#Making sure the Bazel program has been shutdown properly.
 	base_directory_path = 'cd '+ configure.base_directory + '; '
 	# cmd1 = [base_directory_path + 'bazel version;']
@@ -226,72 +295,6 @@ def main():
 
 
 if __name__ == '__main__':
-
-  #Receiving the variables from the XML script, parse them, initialize them, and verify the paths exist.
-
-  # ----Parser-----------------------
-	parser = argparse.ArgumentParser(description="ISL Predicting.")
-	parser.add_argument("input_dict", help="Load input variable dictionary")
-	parser.add_argument("crop_size", help="Image Crop Size.")
-	parser.add_argument("model_location", help="Model Location.")
-	parser.add_argument("output_path", help="Output Image Folder location.")
-	parser.add_argument("dataset_eval_path", help="Folder path to images directory.")
-	parser.add_argument("infer_channels", help="Channel Inferences.")
-	# parser.add_argument("output_dict", help="Write variable dictionary.")
-
-	args = parser.parse_args()
-
-	# ----Load path dict-------------------------
-	infile = args.input_dict
-	var_dict = pickle.load(open(infile, 'rb'))
-
-
-  # ----Initialize parameters------------------
-	# bg_well = str.strip(args.chosen_bg_well) if args.chosen_bg_well else None
-
-	crop_size = args.crop_size
-	model_location = args.model_location
-	output_path = args.output_path
-	dataset_eval_path = args.dataset_eval_path
-	infer_channels = args.infer_channels
-
-	INPUT_PATH = args.dataset_eval_path
-	OUTPUT_PATH = args.output_path
-
-	# BG_WELL = bg_well
-	# ROBO_NUMBER = int(var_dict['RoboNumber'])
-	# IMAGING_MODE = var_dict['ImagingMode']
-	# VALID_WELLS = var_dict['Wells']
-	# VALID_TIMEPOINTS = var_dict['TimePoints']
-
-	# outfile = args.output_dict
-
-	if model_location != '':
-		model_location = '--restore_directory ' + configure.model_location
-		mod = 'ISL-Model'
-	else:
-		model_location = ''
-		mod = 'Your-Model'
-
-	# ----Confirm given folders exist--
-	if not os.path.exists(dataset_eval_path):
-	    print('Confirm the given path to input images (transmitted images used to generate prediction image) exists.')
-	assert os.path.exists(dataset_eval_path), 'Path to input images (transmitted images used to generate prediction image).'
-	if not os.path.exists(output_path):
-		print('Confirm the given path to output of prediction for fluorescent and validation images exists.')
-
-	assert os.path.abspath(output_path) != os.path.abspath(dataset_eval_path) , 'Please provide a unique data path.'
-	assert os.path.abspath(output_path) != os.path.abspath(model_location),  'Please provide a unique model path.'
-
-	date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
-
-	print('\n The Evaluation Directory is:')
-	print(dataset_eval_path)
-	print('\n The Output Directory is:')
-	print(output_path)
-	print('\n ')
-
-	# temp_directory = image_feeder(configure.dataset_prediction)
 
 	main()
 

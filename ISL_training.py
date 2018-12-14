@@ -2,9 +2,7 @@
 '''
 
 import subprocess
-import argparse
-import os
-import sys
+import argparse, pickle, os, sys
 # sys.path.append('/finkbeiner/imaging/smb-robodata/Sina/ISL_Scripts/')
 sys.path.append('/mnt/finkbeinernas/robodata/Sina/')
 import configure
@@ -147,19 +145,57 @@ def main():
 	until_step: The upper step number limit for training.
 
 	"""
+  #Receiving the variables from the XML script, parse them, initialize them, and verify the paths exist.
+
+	# ----Parser-----------------------
+	parser = argparse.ArgumentParser(description="ISL Testing.")
+	parser.add_argument("input_dict", help="Load input variable dictionary")
+	parser.add_argument("dataset_train_path", help="Folder path to images directory.")
+	parser.add_argument("model_location", help="Folder path to checkpoint directory.")
+	parser.add_argument("output_path", help="Output 'train' Folder location, where checkpoints will be saved.")
+	parser.add_argument("until_step", help="Train till step number mentioned.")
+	parser.add_argument("outfile", help="Name of output dictionary.")
+	args = parser.parse_args()
+
+
+	# ----Load path dict-------------------------
+	infile = args.input_dict
+	var_dict = pickle.load(open(infile, 'rb'))
+
+	# ----Initialize parameters------------------
+	dataset_train_path = args.dataset_train_path
+	model_location = args.model_location
+	output_path = args.output_path
+	until_step = args.until_step
+	outfile = args.outfile
+
+	# ----Confirm given folders exist--
+	if not os.path.exists(dataset_train_path):
+		print ('Confirm the given path to input images (transmitted images used for training) exists.')
+		assert os.path.exists(dataset_train_path), 'Confirm the given path for training images directory exists.'
+		if not os.path.exists(model_location):
+			print ('Confirm the given path to checkpoints directory exists.')
+			assert os.path.exists(model_location), 'Confirm the given path for checkpoints directory exists.'
+			if not os.path.exists(output_path):
+				print ('Confirm the given path to output train directory (where new checkpoints will be saved) exists.')
+
+				assert os.path.abspath(output_path) != os.path.abspath(dataset_train_path) ,  'Please provide unique output path  (not model or data path).'
+				assert os.path.abspath(output_path) != os.path.abspath(model_location),  'Please provide unique output path  (not model or data path).'
+
+				date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
 
 	#Making sure the Bazel program has been shutdown properly.
 	base_directory_path = 'cd '+ configure.base_directory + '; '
 	# cmd1 = [base_directory_path + 'bazel shutdown;']
 	# process1 = subprocess.Popen(cmd1, shell=True, stdout=subprocess.PIPE)
 	# process1.wait()
-	temp_directory = image_feeder(configure.dataset_prediction)
+	temp_directory = image_feeder(configure.dataset_training)
 
 	print('\n',temp_directory,'\n')
 
 	# Loop through subfolders in the dataset folder
 
-	for folder in os.listdir(configure.dataset_prediction):
+	for folder in os.listdir(configure.dataset_training):
 
 		# use re.match
 		if (str('B3') or str('E4') or str('G2')) in folder:
@@ -211,46 +247,7 @@ def main():
 	# return output2
 
 
-	if __name__ == '__main__':
+if __name__ == '__main__':
 
-  #Receiving the variables from the XML script, parse them, initialize them, and verify the paths exist.
-
-  # ----Parser-----------------------
-  parser = argparse.ArgumentParser(description="ISL Testing.")
-  parser.add_argument("input_dict", help="Load input variable dictionary")
-  parser.add_argument("dataset_train_path", help="Folder path to images directory.")
-  parser.add_argument("model_location", help="Folder path to checkpoint directory.")
-  parser.add_argument("output_path", help="Output 'train' Folder location, where checkpoints will be saved.")
-  parser.add_argument("until_step", help="Train till step number mentioned.")
-  parser.add_argument("outfile", help="Folder path to images directory.")
-  args = parser.parse_args()
-
-
-  # ----Load path dict-------------------------
-  infile = args.input_dict
-  var_dict = pickle.load(open(infile, 'rb'))
-
-  # ----Initialize parameters------------------
-  dataset_train_path = args.dataset_train_path
-  model_location = args.model_location
-  output_path = args.output_path
-  until_step = args.until_step
-  outfile = args.outfile
-
-	# ----Confirm given folders exist--
-	if not os.path.exists(dataset_train_path):
-		print ('Confirm the given path to input images (transmitted images used for training) exists.')
-		assert os.path.exists(dataset_train_path), 'Confirm the given path for training images directory exists.'
-		if not os.path.exists(model_location):
-			print ('Confirm the given path to checkpoints directory exists.')
-			assert os.path.exists(model_location), 'Confirm the given path for checkpoints directory exists.'
-			if not os.path.exists(output_path):
-				print ('Confirm the given path to output train directory (where new checkpoints will be saved) exists.')
-
-				assert os.path.abspath(output_path) != os.path.abspath(dataset_train_path) ,  'Please provide unique output path  (not model or data path).'
-				assert os.path.abspath(output_path) != os.path.abspath(model_location),  'Please provide unique output path  (not model or data path).'
-
-				date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
-
-				main()
+  main()
 
