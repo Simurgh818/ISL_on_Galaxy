@@ -67,27 +67,27 @@ def image_feeder(dataset_prediction):
 	print('\n',os.listdir(configure.dataset_prediction),'\n')
 
 	for entry in os.listdir(configure.dataset_prediction):
-		if entry.find('scott_1_0')>= 0 :
+		if entry.find('G11')>= 0 :
 			dataset_location = os.path.join(configure.dataset_prediction, entry)
 			# print (dataset_location)
-			tmp_location = os.path.join(temp_directory,'scott_1_0')
+			tmp_location = os.path.join(temp_directory,'G11')
 			os.mkdir(tmp_location)
 			print(tmp_location)
 			# tmp_location is better
 			# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
-			image = [np.zeros((4622,4622),np.int16)]*15
+			image = [np.zeros((2048,2048),np.int16)]*5
 			path = ''
 			k=0
 			New_file_name = []
 			# print('\n',dataset_location)
 			for img in os.listdir(dataset_location):
-				# print(img)
+				print(img)
 				# if img.find('_BRIGHTFIELD_')>=0:
 				# 	os.popen('cp '+dataset_location+'/'+img+' ' + str(tmp_location)+'/'+img+';')
 				path = str(os.path.join(dataset_location, img))
 				tmp_location_img = str(os.path.join(tmp_location, img))
 				if img.find('.tif')>=0:
-					image[k] = cv2.imread(path,2)
+					image[k] = cv2.imread(path,cv2.IMREAD_ANYDEPTH)
 					# print(image[k])
 					base = os.path.splitext(img)[0]
 					New_file_name= str(tmp_location)+'/'+base+'.png'
@@ -100,62 +100,62 @@ def image_feeder(dataset_prediction):
 					os.popen('cp '+path+' ' + tmp_location_img+';')
 
 
-		# elif entry.find('kevan_0_9')>=0:
-		# 	dataset_location = os.path.join(configure.dataset_prediction, entry)
-		# 	# print (dataset_location)
-		# 	tmp_location = os.path.join(temp_directory,'kevan_0_9')
-		# 	os.mkdir(tmp_location)
-		# 	print(tmp_location)
-		# 	# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
-		# 	image = [np.zeros((2048,2048),np.uint16)]*480
-		# 	path = ''
-		# 	k=0
-		# 	New_file_name = []
-		# 	# print('\n',dataset_location)
-		# 	for img in os.listdir(dataset_location):
-		# 		# print(img)
-		# 		# if img.find('_BRIGHTFIELD_')>=0:
-		# 		# 	os.popen('cp '+dataset_location+'/'+img+ ' ' + str(tmp_location)+';')
-		# 		if img.find('.tif')>=0:
-		# 			path = str(os.path.join(dataset_location, img))
-		# 			image[k] = cv2.imread(path,-1)
-		# 			# print(image[k])
-		# 			base = os.path.splitext(img)[0]
-		# 			New_file_name= str(tmp_location)+'/'+base+'.png'
-		# 			image[k] = cv2.imwrite(New_file_name,image[k])
-		# 			# print(New_file_name)
-		# 			k+=1
-		# 		else:
-		# 			os.popen('cp '+dataset_location+'/'+img+' ' + str(tmp_location)+'/'+img+';')
+		elif entry.find('C2')>=0:
+			dataset_location = os.path.join(configure.dataset_prediction, entry)
+			# print (dataset_location)
+			tmp_location = os.path.join(temp_directory,'C2')
+			os.mkdir(tmp_location)
+			print(tmp_location)
+			# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
+			image = [np.zeros((2048,2048),np.int16)]*5
+			path = ''
+			k=0
+			New_file_name = []
+			# print('\n',dataset_location)
+			for img in os.listdir(dataset_location):
+				# print(img)
+				# if img.find('_BRIGHTFIELD_')>=0:
+				# 	os.popen('cp '+dataset_location+'/'+img+ ' ' + str(tmp_location)+';')
+				if img.find('.tif')>=0:
+					path = str(os.path.join(dataset_location, img))
+					image[k] = cv2.imread(path,cv2.IMREAD_ANYDEPTH)
+					# print(image[k])
+					base = os.path.splitext(img)[0]
+					New_file_name= str(tmp_location)+'/'+base+'.png'
+					image[k] = cv2.imwrite(New_file_name,image[k])
+					# print(New_file_name)
+					k+=1
+				else:
+					os.popen('cp '+path+' ' + tmp_location_img+';')
 
-		# elif entry.find('kevan_0_10')>=0:
-		# 	dataset_location = os.path.join(configure.dataset_prediction, entry)
-		# 	# print (dataset_location)
-		# 	tmp_location = os.path.join(temp_directory,'kevan_0_10')
-		# 	os.mkdir(tmp_location)
-		# 	print(tmp_location)
-		# 	# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
-		# 	image = [np.zeros((2048,2048),np.uint16)]*480
-		# 	path = ''
-		# 	k=0
-		# 	New_file_name = []
-		# 	# print('\n',dataset_location)
-		# 	for img in os.listdir(dataset_location):
-		# 		# print(img)
-		# 		# if img.find('_BRIGHTFIELD_')>=0:
-		# 		# 	os.popen('cp '+dataset_location+'/'+img+ ' ' + str(tmp_location)+';')
-		# 		if img.find('.tif')>=0:
-		# 			path = str(os.path.join(dataset_location, img))
-		# 			image[k] = cv2.imread(path,-1)
-		# 			# print(image[k])
-		# 			base = os.path.splitext(img)[0]
-		# 			New_file_name= str(tmp_location)+'/'+base+'.png'
-		# 			image[k] = cv2.imwrite(New_file_name,image[k])
-		# 			# os.popen('mv '+path+' '+ New_file_name+';')
-		# 			# print(New_file_name)
-		# 			k+=1
-		# 		else:
-		# 			os.popen('cp '+dataset_location+'/'+img+' ' + str(tmp_location)+'/'+img+';')
+		elif entry.find('E7')>=0:
+			dataset_location = os.path.join(configure.dataset_prediction, entry)
+			# print (dataset_location)
+			tmp_location = os.path.join(temp_directory,'E7')
+			os.mkdir(tmp_location)
+			print(tmp_location)
+			# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
+			image = [np.zeros((2048,2048),np.int16)]*5
+			path = ''
+			k=0
+			New_file_name = []
+			# print('\n',dataset_location)
+			for img in os.listdir(dataset_location):
+				# print(img)
+				# if img.find('_BRIGHTFIELD_')>=0:
+				# 	os.popen('cp '+dataset_location+'/'+img+ ' ' + str(tmp_location)+';')
+				if img.find('.tif')>=0:
+					path = str(os.path.join(dataset_location, img))
+					image[k] = cv2.imread(path,cv2.IMREAD_ANYDEPTH)
+					# print(image[k])
+					base = os.path.splitext(img)[0]
+					New_file_name= str(tmp_location)+'/'+base+'.png'
+					image[k] = cv2.imwrite(New_file_name,image[k])
+					# os.popen('mv '+path+' '+ New_file_name+';')
+					# print(New_file_name)
+					k+=1
+				else:
+					os.popen('cp '+path+' ' + tmp_location_img+';')
 
 	print('\n',"The temporary directory subfolders are: ", os.listdir(temp_directory),'\n')
 	return temp_directory;
@@ -187,6 +187,7 @@ def main():
 	# ----Load path dict-------------------------
 	infile = args.infile
 	var_dict = pickle.load(open(infile, 'rb'))
+	print("var_dict: ", var_dict, '\n')
 
 
   # ----Initialize parameters------------------
@@ -207,10 +208,11 @@ def main():
 	# BG_WELL = bg_well
 	# ROBO_NUMBER = int(var_dict['RoboNumber'])
 	# IMAGING_MODE = var_dict['ImagingMode']
-	# VALID_WELLS = var_dict['Wells']
-	# VALID_TIMEPOINTS = var_dict['TimePoints']
+	VALID_WELLS = var_dict['Wells']
+	VALID_TIMEPOINTS = var_dict['TimePoints']
 
-
+	print("VALID_WELLS: ", VALID_WELLS, '\n')
+	print("VALID_TIMEPOINTS: ", VALID_TIMEPOINTS, '\n')
 
 	if model_location != '':
 		model_location = '--restore_directory ' + configure.model_location
