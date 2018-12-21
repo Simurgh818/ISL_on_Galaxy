@@ -14,7 +14,7 @@ import tempfile
 import cv2
 import numpy as np
 
-global temp_directory, dataset_prediction
+global temp_directory, tmp_location, dataset_prediction, VALID_WELLS, VALID_TIMEPOINTS
 # temp_directory = '/home/sinadabiri/galaxy-new2/galaxy/database/tmp/'
 
 INPUT_PATH = ''
@@ -22,8 +22,10 @@ ROBO_NUMBER = None
 IMAGING_MODE = ''
 VALID_WELLS = []
 VALID_TIMEPOINTS = []
+tmp_location = ''
+tmp_location_img = ''
 
-def image_feeder(dataset_prediction):
+def image_feeder(dataset_prediction, valid_wells, valid_timepoints):
 
 	global BG_WELL_DICT
 	# input_image_stack_list, BG_WELL_DICT = background_removal_mp.get_image_tokens_list(INPUT_PATH, ROBO_NUMBER, IMAGING_MODE, VALID_WELLS, VALID_TIMEPOINTS, BG_WELL)
@@ -66,99 +68,147 @@ def image_feeder(dataset_prediction):
 	print(temp_directory)
 	print('\n',os.listdir(configure.dataset_prediction),'\n')
 
-	for entry in os.listdir(configure.dataset_prediction):
+	print("VALID_WELLS: ", VALID_WELLS, '\n')
+	print("VALID_TIMEPOINTS: ", VALID_TIMEPOINTS, '\n')
+
+	for entry in VALID_WELLS:
 		if entry.find('G11')>= 0 :
 			dataset_location = os.path.join(configure.dataset_prediction, entry)
 			# print (dataset_location)
 			tmp_location = os.path.join(temp_directory,'G11')
-			os.mkdir(tmp_location)
-			print(tmp_location)
+			if not os.path.exists(tmp_location):
+				os.mkdir(tmp_location)
+			# print(tmp_location)
 			# tmp_location is better
 			# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
-			image = [np.zeros((2048,2048),np.int16)]*5
+			image = [np.zeros((2048,2048),np.int16)]*15
 			path = ''
 			k=0
 			New_file_name = []
 			# print('\n',dataset_location)
+
 			for img in os.listdir(dataset_location):
-				print(img)
 				# if img.find('_BRIGHTFIELD_')>=0:
 				# 	os.popen('cp '+dataset_location+'/'+img+' ' + str(tmp_location)+'/'+img+';')
 				path = str(os.path.join(dataset_location, img))
-				tmp_location_img = str(os.path.join(tmp_location, img))
-				if img.find('.tif')>=0:
+
+				if (img.find('.tif')>=0 and img.find('T0')>=0):
 					image[k] = cv2.imread(path,cv2.IMREAD_ANYDEPTH)
 					# print(image[k])
+					tmp_location_tp = os.path.join(tmp_location,'T0')
+					if not os.path.exists(tmp_location_tp):
+						os.mkdir(tmp_location_tp)
+					# print(tmp_location_tp)
+					tmp_location_img = str(os.path.join(tmp_location_tp, img))
+
 					base = os.path.splitext(img)[0]
-					New_file_name= str(tmp_location)+'/'+base+'.png'
+					New_file_name= str(tmp_location_tp)+'/'+base+'.png'
 					# path = os.rename(path, New_file_name)
 					# os.popen('mv '+path+' '+ New_file_name+';')
 					image[k] = cv2.imwrite(New_file_name,image[k])
-					# print(New_file_name)
+					print(New_file_name)
 					k+=1
-				else:
+				elif (img.find('.png')>=0 and img.find('T0')>=0):
 					os.popen('cp '+path+' ' + tmp_location_img+';')
 
-
-		elif entry.find('C2')>=0:
-			dataset_location = os.path.join(configure.dataset_prediction, entry)
-			# print (dataset_location)
-			tmp_location = os.path.join(temp_directory,'C2')
-			os.mkdir(tmp_location)
-			print(tmp_location)
-			# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
-			image = [np.zeros((2048,2048),np.int16)]*5
-			path = ''
-			k=0
-			New_file_name = []
-			# print('\n',dataset_location)
-			for img in os.listdir(dataset_location):
-				# print(img)
-				# if img.find('_BRIGHTFIELD_')>=0:
-				# 	os.popen('cp '+dataset_location+'/'+img+ ' ' + str(tmp_location)+';')
-				if img.find('.tif')>=0:
-					path = str(os.path.join(dataset_location, img))
+				if (img.find('.tif')>=0 and img.find('T1')>=0):
 					image[k] = cv2.imread(path,cv2.IMREAD_ANYDEPTH)
 					# print(image[k])
-					base = os.path.splitext(img)[0]
-					New_file_name= str(tmp_location)+'/'+base+'.png'
-					image[k] = cv2.imwrite(New_file_name,image[k])
-					# print(New_file_name)
-					k+=1
-				else:
-					os.popen('cp '+path+' ' + tmp_location_img+';')
+					tmp_location_tp = os.path.join(tmp_location,'T1')
+					if not os.path.exists(tmp_location_tp):
+						os.mkdir(tmp_location_tp)
+					# print(tmp_location_tp)
+					tmp_location_img = str(os.path.join(tmp_location_tp, img))
 
-		elif entry.find('E7')>=0:
-			dataset_location = os.path.join(configure.dataset_prediction, entry)
-			# print (dataset_location)
-			tmp_location = os.path.join(temp_directory,'E7')
-			os.mkdir(tmp_location)
-			print(tmp_location)
-			# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
-			image = [np.zeros((2048,2048),np.int16)]*5
-			path = ''
-			k=0
-			New_file_name = []
-			# print('\n',dataset_location)
-			for img in os.listdir(dataset_location):
-				# print(img)
-				# if img.find('_BRIGHTFIELD_')>=0:
-				# 	os.popen('cp '+dataset_location+'/'+img+ ' ' + str(tmp_location)+';')
-				if img.find('.tif')>=0:
-					path = str(os.path.join(dataset_location, img))
-					image[k] = cv2.imread(path,cv2.IMREAD_ANYDEPTH)
-					# print(image[k])
 					base = os.path.splitext(img)[0]
-					New_file_name= str(tmp_location)+'/'+base+'.png'
-					image[k] = cv2.imwrite(New_file_name,image[k])
+					New_file_name= str(tmp_location_tp)+'/'+base+'.png'
+					# path = os.rename(path, New_file_name)
 					# os.popen('mv '+path+' '+ New_file_name+';')
-					# print(New_file_name)
+					image[k] = cv2.imwrite(New_file_name,image[k])
+					print(New_file_name)
 					k+=1
-				else:
+				elif (img.find('.png')>=0 and img.find('T1')>=0):
 					os.popen('cp '+path+' ' + tmp_location_img+';')
 
-	print('\n',"The temporary directory subfolders are: ", os.listdir(temp_directory),'\n')
-	return temp_directory;
+				if (img.find('.tif')>=0 and img.find('T2')>=0):
+					image[k] = cv2.imread(path,cv2.IMREAD_ANYDEPTH)
+					# print(image[k])
+					tmp_location_tp = os.path.join(tmp_location,'T2')
+					if not os.path.exists(tmp_location_tp):
+						os.mkdir(tmp_location_tp)
+					# print(tmp_location_tp)
+					tmp_location_img = str(os.path.join(tmp_location_tp, img))
+
+					base = os.path.splitext(img)[0]
+					New_file_name= str(tmp_location_tp)+'/'+base+'.png'
+					# path = os.rename(path, New_file_name)
+					# os.popen('mv '+path+' '+ New_file_name+';')
+					image[k] = cv2.imwrite(New_file_name,image[k])
+					print(New_file_name)
+					k+=1
+				elif (img.find('.png')>=0 and img.find('T2')>=0):
+					os.popen('cp '+path+' ' + tmp_location_img+';')
+
+
+		# elif entry.find('C2')>=0:
+		# 	dataset_location = os.path.join(configure.dataset_prediction, entry)
+		# 	# print (dataset_location)
+		# 	tmp_location = os.path.join(temp_directory,'C2')
+		# 	os.mkdir(tmp_location)
+		# 	print(tmp_location)
+		# 	# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
+		# 	image = [np.zeros((2048,2048),np.int16)]*5
+		# 	path = ''
+		# 	k=0
+		# 	New_file_name = []
+		# 	# print('\n',dataset_location)
+		# 	for img in os.listdir(dataset_location):
+		# 		# print(img)
+		# 		# if img.find('_BRIGHTFIELD_')>=0:
+		# 		# 	os.popen('cp '+dataset_location+'/'+img+ ' ' + str(tmp_location)+';')
+		# 		if img.find('.tif')>=0:
+		# 			path = str(os.path.join(dataset_location, img))
+		# 			image[k] = cv2.imread(path,cv2.IMREAD_ANYDEPTH)
+		# 			# print(image[k])
+		# 			base = os.path.splitext(img)[0]
+		# 			New_file_name= str(tmp_location)+'/'+base+'.png'
+		# 			image[k] = cv2.imwrite(New_file_name,image[k])
+		# 			# print(New_file_name)
+		# 			k+=1
+		# 		else:
+		# 			os.popen('cp '+path+' ' + tmp_location_img+';')
+
+		# elif entry.find('E7')>=0:
+		# 	dataset_location = os.path.join(configure.dataset_prediction, entry)
+		# 	# print (dataset_location)
+		# 	tmp_location = os.path.join(temp_directory,'E7')
+		# 	os.mkdir(tmp_location)
+		# 	print(tmp_location)
+		# 	# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
+		# 	image = [np.zeros((2048,2048),np.int16)]*5
+		# 	path = ''
+		# 	k=0
+		# 	New_file_name = []
+		# 	# print('\n',dataset_location)
+		# 	for img in os.listdir(dataset_location):
+		# 		# print(img)
+		# 		# if img.find('_BRIGHTFIELD_')>=0:
+		# 		# 	os.popen('cp '+dataset_location+'/'+img+ ' ' + str(tmp_location)+';')
+		# 		if img.find('.tif')>=0:
+		# 			path = str(os.path.join(dataset_location, img))
+		# 			image[k] = cv2.imread(path,cv2.IMREAD_ANYDEPTH)
+		# 			# print(image[k])
+		# 			base = os.path.splitext(img)[0]
+		# 			New_file_name= str(tmp_location)+'/'+base+'.png'
+		# 			image[k] = cv2.imwrite(New_file_name,image[k])
+		# 			# os.popen('mv '+path+' '+ New_file_name+';')
+		# 			# print(New_file_name)
+		# 			k+=1
+		# 		else:
+		# 			os.popen('cp '+path+' ' + tmp_location_img+';')
+
+	print('\n',"The temporary directory subfolders are: ", os.listdir(tmp_location),'\n')
+	return tmp_location;
 
 def main():
 	""" First the script makes sure the Bazel has been shutdown properly. Then it starts the bazel command with the following arguments:
@@ -171,6 +221,73 @@ def main():
 	infer_channels: The microscope inference channels.
 
 	"""
+
+		# temp_directory = image_feeder(configure.dataset_prediction)
+	#Making sure the Bazel program has been shutdown properly.
+	base_directory_path = 'cd '+ configure.base_directory + '; '
+	# cmd1 = [base_directory_path + 'bazel version;']
+	# process1 = subprocess.Popen(cmd1, shell=True, stdout=subprocess.PIPE)
+	# process1.wait()
+	temp_directory = image_feeder(configure.dataset_prediction, VALID_WELLS, VALID_TIMEPOINTS)
+
+	print('\n','The temp_directory: ',temp_directory,'\n')
+
+	# Loop through subfolders in the dataset folder
+
+	for w in VALID_WELLS:
+		# date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
+		# print(w)
+		if (w.find('G11'))>=0:
+			# dataset_eval_path_w = str(os.path.join(temp_directory, w))
+			# print(dataset_eval_path_w, '\n')
+			for tp in VALID_TIMEPOINTS:
+				print(tp)
+				# print('The temp_directory',temp_directory)
+				dataset_eval_path_tp = str(os.path.join(temp_directory, tp))
+				# print(dataset_eval_path_tp, '\n')
+
+				#Running Bazel for prediction. Note txt log files are also being created incase troubleshooting is needed.
+				date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
+				# dataset_eval_path = str(os.path.join(temp_directory, w))
+				print("Dataset Eval Path is: ",dataset_eval_path_tp,'\n')
+
+				print("Bazel Launching", '\n')
+
+				base_dir = 'export BASE_DIRECTORY=' + configure.base_directory + '/isl;  '
+
+				baz_cmd = [base_directory_path + base_dir + 'bazel run isl:launch -- \
+				--alsologtostderr \
+				--base_directory $BASE_DIRECTORY \
+				--mode EVAL_EVAL \
+				--metric INFER_FULL \
+				--stitch_crop_size '+ crop_size + ' \
+				--restore_directory '+ configure.model_location + ' \
+				--output_path '+ output_path + ' \
+				--read_pngs \
+				--dataset_eval_directory ' + dataset_eval_path_tp + ' \
+				--infer_channel_whitelist ' + infer_channels + ' \
+				--error_panels False \
+				--infer_simplify_error_panels \
+				> ' + OUTPUT_PATH + '/predicting_output_'+ mod + '_'+ date_time +'_'+ crop_size +'_'+ w +'_'+ tp + '_images.txt \
+				2> ' + OUTPUT_PATH + '/predicting_error_'+ mod + '_'+ date_time +'_'+ crop_size + '_'+ w +'_'+ tp + '_images.txt;']
+
+				process = subprocess.Popen(baz_cmd, shell=True, stdout=subprocess.PIPE)
+				process.wait()
+
+				print("Bazel Shutdown")
+
+				#Here we shutdown the Bazel program.
+				cmd3 = [base_directory_path + 'bazel shutdown;']
+				process3 = subprocess.Popen(cmd3, shell=True, stdout=subprocess.PIPE)
+				process3.wait()
+		else:
+			continue
+
+		return
+
+
+
+if __name__ == '__main__':
 	#Receiving the variables from the XML script, parse them, initialize them, and verify the paths exist.
 
 	# ----Parser-----------------------
@@ -187,7 +304,7 @@ def main():
 	# ----Load path dict-------------------------
 	infile = args.infile
 	var_dict = pickle.load(open(infile, 'rb'))
-	print("var_dict: ", var_dict, '\n')
+	# print("var_dict: ", var_dict, '\n')
 
 
   # ----Initialize parameters------------------
@@ -211,8 +328,8 @@ def main():
 	VALID_WELLS = var_dict['Wells']
 	VALID_TIMEPOINTS = var_dict['TimePoints']
 
-	print("VALID_WELLS: ", VALID_WELLS, '\n')
-	print("VALID_TIMEPOINTS: ", VALID_TIMEPOINTS, '\n')
+	# print("VALID_WELLS: ", VALID_WELLS, '\n')
+	# print("VALID_TIMEPOINTS: ", VALID_TIMEPOINTS, '\n')
 
 	if model_location != '':
 		model_location = '--restore_directory ' + configure.model_location
@@ -239,64 +356,6 @@ def main():
 			print(output_path)
 			print('\n ')
 
-		# temp_directory = image_feeder(configure.dataset_prediction)
-	#Making sure the Bazel program has been shutdown properly.
-	base_directory_path = 'cd '+ configure.base_directory + '; '
-	# cmd1 = [base_directory_path + 'bazel version;']
-	# process1 = subprocess.Popen(cmd1, shell=True, stdout=subprocess.PIPE)
-	# process1.wait()
-	temp_directory = image_feeder(configure.dataset_prediction)
-
-	print('\n',temp_directory,'\n')
-
-	# Loop through subfolders in the dataset folder
-
-	for folder in os.listdir(temp_directory):
-
-		# use re.match
-		if folder.find('')>=0:
-			#Running Bazel for prediction. Note txt log files are also being created incase troubleshooting is needed.
-			date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
-			dataset_eval_path = str(os.path.join(temp_directory, folder))
-			print("Dataset Eval Path is: ",dataset_eval_path,'\n')
-
-			print("Bazel Launching", '\n')
-
-			base_dir = 'export BASE_DIRECTORY=' + configure.base_directory + '/isl;  '
-
-			baz_cmd = [base_directory_path + base_dir + 'bazel run isl:launch -- \
-			--alsologtostderr \
-			--base_directory $BASE_DIRECTORY \
-			--mode EVAL_EVAL \
-			--metric INFER_FULL \
-			--stitch_crop_size '+ crop_size + ' \
-			--restore_directory '+ configure.model_location + ' \
-			--output_path '+ output_path + ' \
-			--read_pngs \
-			--dataset_eval_directory ' + dataset_eval_path + ' \
-			--infer_channel_whitelist ' + infer_channels + ' \
-			--error_panels False \
-			--infer_simplify_error_panels \
-			> ' + OUTPUT_PATH + '/predicting_output_'+ mod + '_'+ date_time +'_'+ crop_size +'_'+ folder + '_images.txt \
-			2> ' + OUTPUT_PATH + '/predicting_error_'+ mod + '_'+ date_time +'_'+ crop_size + '_'+ folder + '_images.txt;']
-
-			process = subprocess.Popen(baz_cmd, shell=True, stdout=subprocess.PIPE)
-			process.wait()
-
-			print("Bazel Shutdown")
-
-			#Here we shutdown the Bazel program.
-			cmd3 = [base_directory_path + 'bazel shutdown;']
-			process3 = subprocess.Popen(cmd3, shell=True, stdout=subprocess.PIPE)
-			process3.wait()
-		else:
-			continue
-
-			return
-
-
-
-if __name__ == '__main__':
 
 	main()
 
