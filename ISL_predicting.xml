@@ -34,7 +34,7 @@ echo "End of Prediction";
 	<param name="infer_channels" type="select" format="text" label="Specify Inference Channels" help="If images are confocal for survival tracking choose DAPI_CONFOCAL,CELLMASK_CONFOCAL,DEAD_CONFOCAL or for all other uses choose DAPI_CONFOCAL, MAP2_CONFOCAL,NFH_CONFOCAL. But if images are widefield choose DAPI_WIDEFIELD, TUJ1_WIDEFIELD, ISLET_WIDEFIELD">
 		<option value="DAPI_CONFOCAL,MAP2_CONFOCAL,NFH_CONFOCAL" selected="true">DAPI_CONFOCAL,MAP2_CONFOCAL,NFH_CONFOCAL</option>
 		<option value="DAPI_CONFOCAL,CELLMASK_CONFOCAL" >DAPI_CONFOCAL,CELLMASK_CONFOCAL</option>
-		<option value="DAPI_WIDEFIELD,TUJ1_WIDEFIELD,ISLET_WIDEFIELD">DAPI_WIDEFIELD,TUJ1_WIDEFIELD, ISLET_WIDEFIELD</option>
+		<option value="DAPI_WIDEFIELD,TUJ1_WIDEFIELD,ISLET_WIDEFIELD">DAPI_WIDEFIELD,TUJ1_WIDEFIELD,ISLET_WIDEFIELD</option>
 	</param>
 
 </inputs>
