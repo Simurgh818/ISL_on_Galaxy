@@ -12,9 +12,13 @@ import tempfile
 import cv2
 import numpy as np
 
-global temp_directory, dataset_training
+global temp_directory, dataset_training, VALID_WELLS, VALID_TIMEPOINTS
 
-def image_feeder(dataset_training):
+VALID_WELLS = []
+VALID_TIMEPOINTS = []
+tmp_location = ''
+
+def image_feeder(dataset_training, valid_wells, valid_timepoints):
 
 	global BG_WELL_DICT
 	# input_image_stack_list, BG_WELL_DICT = background_removal_mp.get_image_tokens_list(INPUT_PATH, ROBO_NUMBER, IMAGING_MODE, VALID_WELLS, VALID_TIMEPOINTS, BG_WELL)
@@ -53,84 +57,57 @@ def image_feeder(dataset_training):
 			# with os.scandir(dataset_training) as location:
 	temp_directory = tempfile.mkdtemp()
 	print('The created Temp Directory is: ', temp_directory,'\n')
-	print(temp_directory)
-	print('\n',os.listdir(configure.dataset_training),'\n')
+	print('The subfolders in dataset_training folder are: ',os.listdir(configure.dataset_training),'\n')
+	print("VALID_WELLS: ", VALID_WELLS, '\n')
+	print("VALID_TIMEPOINTS: ", VALID_TIMEPOINTS, '\n')
 
-	for entry in os.listdir(configure.dataset_training):
-		if entry.find('B3')>= 0 :
+	for entry in VALID_WELLS:
+		if entry.find('')>= 0 :
 			dataset_location = os.path.join(configure.dataset_training, entry)
 			# print (dataset_location)
-			tmp_location = os.path.join(temp_directory,'B3')
-			print(tmp_location)
-			os.popen('cp -r '+dataset_location+' '+ str(temp_directory)+';')
-			image = [np.zeros((2048,2048),np.uint16)]*375
+			tmp_location = os.path.join(temp_directory,entry)
+			if not os.path.exists(tmp_location):
+				os.mkdir(tmp_location)
+			# print(tmp_location)
+			# tmp_location is better
+			# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
+			image = [np.zeros((2048,2048),np.int16)]*15
 			path = ''
 			k=0
 			New_file_name = []
 			# print('\n',dataset_location)
-			for img in os.listdir(dataset_location):
-				# print(img)
-				if img.find('.tif')>=0:
-					path = str(os.path.join(dataset_location, img))
-					image[k] = cv2.imread(path,-1)
-					# print(image[k])
-					base = os.path.splitext(img)[0]
-					New_file_name= str(tmp_location)+'/'+base+'.png'
-					image[k] = cv2.imwrite(New_file_name,image[k])
-					# print(New_file_name)
-					k+=1
-				else:
-					continue
 
-		elif entry.find('E4')>=0:
-			dataset_location = os.path.join(configure.dataset_training, entry)
-			# print (dataset_location)
-			tmp_location = os.path.join(temp_directory,'E4')
-			print(tmp_location)
-			os.popen('cp -r '+dataset_location+' '+ str(temp_directory)+';')
-			image = [np.zeros((2048,2048),np.uint16)]*375
-			path = ''
-			k=0
-			New_file_name = []
-			# print('\n',dataset_location)
 			for img in os.listdir(dataset_location):
-				# print(img)
-				if img.find('.tif')>=0:
-					path = str(os.path.join(dataset_location, img))
-					image[k] = cv2.imread(path,-1)
-					# print(image[k])
-					base = os.path.splitext(img)[0]
-					New_file_name= str(tmp_location)+'/'+base+'.png'
-					image[k] = cv2.imwrite(New_file_name,image[k])
-					# print(New_file_name)
-					k+=1
-				else:
-					continue
+				# if img.find('_BRIGHTFIELD_')>=0:
+				# 	os.popen('cp '+dataset_location+'/'+img+' ' + str(tmp_location)+'/'+img+';')
+				path = str(os.path.join(dataset_location, img))
 
-		elif entry.find('G2')>=0:
-			dataset_location = os.path.join(configure.dataset_training, entry)
-			# print (dataset_location)
-			tmp_location = os.path.join(temp_directory,'G2')
-			print(tmp_location)
-			os.popen('cp -r '+dataset_location+' '+ str(temp_directory)+';')
-			image = [np.zeros((2048,2048),np.uint16)]*375
-			path = ''
-			k=0
-			New_file_name = []
-			# print('\n',dataset_location)
-			for img in os.listdir(dataset_location):
-				# print(img)
-				if img.find('.tif')>=0:
-					path = str(os.path.join(dataset_location, img))
-					image[k] = cv2.imread(path,-1)
-					# print(image[k])
-					base = os.path.splitext(img)[0]
-					New_file_name= str(tmp_location)+'/'+base+'.png'
-					image[k] = cv2.imwrite(New_file_name,image[k])
-					# print(New_file_name)
-					k+=1
-				else:
-					continue
+				for tp in VALID_TIMEPOINTS:
+					# print('Running timepoint: ', tp, '\n')
+					if (img.find('.tif')>=0 and img.find(tp)>=0):
+						image[k] = cv2.imread(path,cv2.IMREAD_ANYDEPTH)
+						# print(image[k])
+						tmp_location_tp = os.path.join(tmp_location,tp)
+						if not os.path.exists(tmp_location_tp):
+							os.mkdir(tmp_location_tp)
+						# print(tmp_location_tp)
+						tmp_location_img = str(os.path.join(tmp_location_tp, img))
+
+						base = os.path.splitext(img)[0]
+						New_file_name= str(tmp_location_tp)+'/'+base+'.png'
+						# path = os.rename(path, New_file_name)
+						# os.popen('mv '+path+' '+ New_file_name+';')
+						image[k] = cv2.imwrite(New_file_name,image[k])
+						# print(New_file_name)
+						k+=1
+					elif img.find(tp)>=0:
+						tmp_location_tp = os.path.join(tmp_location,tp)
+						if not os.path.exists(tmp_location_tp):
+							os.mkdir(tmp_location_tp)
+						tmp_location_img = str(os.path.join(tmp_location_tp, img))
+						os.popen('cp '+path+' ' + tmp_location_img+';')
+
+
 
 	print('\n',"The temporary directory subfolders are: ", os.listdir(temp_directory),'\n')
 	return temp_directory;
@@ -145,6 +122,92 @@ def main():
 	until_step: The upper step number limit for training.
 
 	"""
+
+
+	#Making sure the Bazel program has been shutdown properly.
+	base_directory_path = 'cd '+ configure.base_directory + '; '
+	# cmd1 = [base_directory_path + 'bazel shutdown;']
+	# process1 = subprocess.Popen(cmd1, shell=True, stdout=subprocess.PIPE)
+	# process1.wait()
+	temp_directory = image_feeder(configure.dataset_training, VALID_WELLS, VALID_TIMEPOINTS)
+
+	print('\n','The temp_directory: ',temp_directory,'\n')
+
+	# Loop through subfolders in the dataset folder
+
+	for folder in os.listdir(configure.dataset_training):
+
+		# Loop through subfolders in the dataset folder
+	# VALID_WELLS
+		for w in os.listdir(temp_directory):
+			date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
+			print(w)
+			if (w.find('G11'))>=0:
+				dataset_train_path_w = str(os.path.join(temp_directory, w))
+				print(dataset_train_path_w, '\n')
+				print('\n','The temp_directory subfolders are: ',os.listdir(dataset_train_path_w),'\n')
+	# ----
+				for tp in os.listdir(dataset_train_path_w):
+					print(tp)
+					print('The temp_directory',dataset_train_path_w)
+					if tp.find('')>=0:
+						dataset_train_path_tp = str(os.path.join(dataset_train_path_w, tp))
+						print(dataset_train_path_tp, '\n')
+	# -----
+				#Running Bazel for prediction. Note txt log files are also being created incase troubleshooting is needed.
+						date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
+						dataset_train_path = dataset_train_path_tp
+						# str(os.path.join(temp_directory, w))
+						print("Dataset Train Path is: ",dataset_train_path_tp,'\n')
+
+						print("Bazel Launching")
+
+						# The directory where the checkpoints in 'train' subfolder will be saved.
+						base_dir = 'export BASE_DIRECTORY=' + configure.base_directory + '/isl; '
+
+						cmd2 = [base_directory_path + base_dir + 'bazel run isl:launch -- \
+						--alsologtostderr \
+						--base_directory $BASE_DIRECTORY \
+						--mode TRAIN \
+						--metric LOSS \
+						--master "" \
+						--restore_directory '+ configure.model_location + ' \
+						--output_path '+ output_path + ' \
+						--read_pngs \
+						--dataset_train_directory ' + dataset_train_path + ' \
+						--until_step ' + until_step + ' \
+						> ' + output_path + '/training_output_'+ date_time + '_'+ w + '_'+ tp +'_images.txt \
+						2> ' + output_path + '/training_error_'+ date_time + '_'+ w + '_'+ tp +'_images.txt;']
+
+						process2 = subprocess.Popen(cmd2, shell=True, stdout=subprocess.PIPE)
+						process2.wait()
+
+						# print("Bazel Shutdown")
+
+						# #Here we shutdown the Bazel program.
+						# cmd3 = [base_directory_path + 'bazel shutdown;']
+						# process3 = subprocess.Popen(cmd3, shell=True, stdout=subprocess.PIPE)
+						# process3.wait()
+			else:
+				continue
+
+			return
+
+	## Launch tensorboard disabled for cluster.
+	# cmd2 = ['tensorboard --logdir /home/sinadabiri/venvs/in-silico-labeling-master/isl']
+	# process2 = subprocess.Popen(cmd2, shell=True, stdout=subprocess.PIPE)
+	# process2.wait()
+	# output2 = process2.communicate()[0]
+
+	print("Model checkpoints are written to:")
+	print(output_path)
+	# print ("The Link to TensorBoard is:")
+	# print (output2)
+
+	# return output2
+
+
+if __name__ == '__main__':
   #Receiving the variables from the XML script, parse them, initialize them, and verify the paths exist.
 
 	# ----Parser-----------------------
@@ -169,6 +232,9 @@ def main():
 	until_step = args.until_step
 	outfile = args.outfile
 
+	VALID_WELLS = var_dict['Wells']
+	VALID_TIMEPOINTS = var_dict['TimePoints']
+
 	# ----Confirm given folders exist--
 	if not os.path.exists(dataset_train_path):
 		print ('Confirm the given path to input images (transmitted images used for training) exists.')
@@ -183,71 +249,5 @@ def main():
 				assert os.path.abspath(output_path) != os.path.abspath(model_location),  'Please provide unique output path  (not model or data path).'
 
 				date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
-
-	#Making sure the Bazel program has been shutdown properly.
-	base_directory_path = 'cd '+ configure.base_directory + '; '
-	# cmd1 = [base_directory_path + 'bazel shutdown;']
-	# process1 = subprocess.Popen(cmd1, shell=True, stdout=subprocess.PIPE)
-	# process1.wait()
-	temp_directory = image_feeder(configure.dataset_training)
-
-	print('\n',temp_directory,'\n')
-
-	# Loop through subfolders in the dataset folder
-
-	for folder in os.listdir(configure.dataset_training):
-
-		# use re.match
-		if (str('B3') or str('E4') or str('G2')) in folder:
-			#Running Bazel for Training. Note txt log files are also being created incase troubleshooting is needed.
-			print("Bazel Launching")
-
-			# The directory where the checkpoints in 'train' subfolder will be saved.
-			base_dir = 'export BASE_DIRECTORY=' + configure.base_directory + '/isl; '
-
-			cmd2 = [base_directory_path + base_dir + 'bazel run isl:launch -- \
-			--alsologtostderr \
-			--base_directory $BASE_DIRECTORY \
-			--mode TRAIN \
-			--metric LOSS \
-			--master "" \
-			--restore_directory '+ configure.model_location + ' \
-			--output_path '+ output_path + ' \
-			--read_pngs \
-			--dataset_train_directory ' + dataset_train_path + ' \
-			--until_step ' + until_step + ' \
-			> ' + output_path + '/training_output_'+ date_time +'_B2images.txt \
-			2> ' + output_path + '/training_error_'+ date_time +'_B2images.txt;']
-
-			process2 = subprocess.Popen(cmd2, shell=True, stdout=subprocess.PIPE)
-			process2.wait()
-
-			print("Bazel Shutdown")
-
-			#Here we shutdown the Bazel program.
-			cmd3 = [base_directory_path + 'bazel shutdown;']
-			process3 = subprocess.Popen(cmd3, shell=True, stdout=subprocess.PIPE)
-			process3.wait()
-		else:
-			continue
-
-			return
-
-	## Launch tensorboard disabled for cluster.
-	# cmd2 = ['tensorboard --logdir /home/sinadabiri/venvs/in-silico-labeling-master/isl']
-	# process2 = subprocess.Popen(cmd2, shell=True, stdout=subprocess.PIPE)
-	# process2.wait()
-	# output2 = process2.communicate()[0]
-
-	print("Model checkpoints are written to:")
-	print(output_path)
-	# print ("The Link to TensorBoard is:")
-	# print (output2)
-
-	# return output2
-
-
-if __name__ == '__main__':
-
-  main()
+	main()
 

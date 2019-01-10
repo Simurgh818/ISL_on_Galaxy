@@ -64,6 +64,7 @@ def image_feeder(dataset_prediction, valid_wells, valid_timepoints):
 			# with os.scandir(dataset_prediction) as location:
 
 	temp_directory = tempfile.mkdtemp()
+	# '/tmp' did not work. It creastes the tmp folder in galaxy/database subfolder.
 	print('The created Temp Directory is: ', temp_directory,'\n')
 	print('The subfolders in dataset_prediction folder are: ',os.listdir(configure.dataset_prediction),'\n')
 
@@ -91,132 +92,33 @@ def image_feeder(dataset_prediction, valid_wells, valid_timepoints):
 				# 	os.popen('cp '+dataset_location+'/'+img+' ' + str(tmp_location)+'/'+img+';')
 				path = str(os.path.join(dataset_location, img))
 
-				if (img.find('.tif')>=0 and img.find('T0')>=0):
-					image[k] = cv2.imread(path,cv2.IMREAD_ANYDEPTH)
-					# print(image[k])
-					tmp_location_tp = os.path.join(tmp_location,'T0')
-					if not os.path.exists(tmp_location_tp):
-						os.mkdir(tmp_location_tp)
-					# print(tmp_location_tp)
-					tmp_location_img = str(os.path.join(tmp_location_tp, img))
+				for tp in VALID_TIMEPOINTS:
+					# print('Running timepoint: ', tp, '\n')
+					if (img.find('.tif')>=0 and img.find(tp)>=0):
+						image[k] = cv2.imread(path,cv2.IMREAD_ANYDEPTH)
+						# print(image[k])
+						tmp_location_tp = os.path.join(tmp_location,tp)
+						if not os.path.exists(tmp_location_tp):
+							os.mkdir(tmp_location_tp)
+						# print(tmp_location_tp)
+						tmp_location_img = str(os.path.join(tmp_location_tp, img))
 
-					base = os.path.splitext(img)[0]
-					New_file_name= str(tmp_location_tp)+'/'+base+'.png'
-					# path = os.rename(path, New_file_name)
-					# os.popen('mv '+path+' '+ New_file_name+';')
-					image[k] = cv2.imwrite(New_file_name,image[k])
-					print(New_file_name)
-					k+=1
-				elif img.find('T0')>=0:
-					tmp_location_tp = os.path.join(tmp_location,'T0')
-					if not os.path.exists(tmp_location_tp):
-						os.mkdir(tmp_location_tp)
-					tmp_location_img = str(os.path.join(tmp_location_tp, img))
-					os.popen('cp '+path+' ' + tmp_location_img+';')
-
-				if (img.find('.tif')>=0 and img.find('T1')>=0):
-					image[k] = cv2.imread(path,cv2.IMREAD_ANYDEPTH)
-					# print(image[k])
-					tmp_location_tp = os.path.join(tmp_location,'T1')
-					if not os.path.exists(tmp_location_tp):
-						os.mkdir(tmp_location_tp)
-					# print(tmp_location_tp)
-					tmp_location_img = str(os.path.join(tmp_location_tp, img))
-
-					base = os.path.splitext(img)[0]
-					New_file_name= str(tmp_location_tp)+'/'+base+'.png'
-					# path = os.rename(path, New_file_name)
-					# os.popen('mv '+path+' '+ New_file_name+';')
-					image[k] = cv2.imwrite(New_file_name,image[k])
-					print(New_file_name)
-					k+=1
-				elif img.find('T1')>=0:
-					tmp_location_tp = os.path.join(tmp_location,'T1')
-					if not os.path.exists(tmp_location_tp):
-						os.mkdir(tmp_location_tp)
-					tmp_location_img = str(os.path.join(tmp_location_tp, img))
-					os.popen('cp '+path+' ' + tmp_location_img+';')
-
-				if (img.find('.tif')>=0 and img.find('T2')>=0):
-					image[k] = cv2.imread(path,cv2.IMREAD_ANYDEPTH)
-					# print(image[k])
-					tmp_location_tp = os.path.join(tmp_location,'T2')
-					if not os.path.exists(tmp_location_tp):
-						os.mkdir(tmp_location_tp)
-					# print(tmp_location_tp)
-					tmp_location_img = str(os.path.join(tmp_location_tp, img))
-
-					base = os.path.splitext(img)[0]
-					New_file_name= str(tmp_location_tp)+'/'+base+'.png'
-					# path = os.rename(path, New_file_name)
-					# os.popen('mv '+path+' '+ New_file_name+';')
-					image[k] = cv2.imwrite(New_file_name,image[k])
-					print(New_file_name)
-					k+=1
-				elif img.find('T2')>=0:
-					tmp_location_tp = os.path.join(tmp_location,'T2')
-					if not os.path.exists(tmp_location_tp):
-						os.mkdir(tmp_location_tp)
-					tmp_location_img = str(os.path.join(tmp_location_tp, img))
-					os.popen('cp '+path+' ' + tmp_location_img+';')
+						base = os.path.splitext(img)[0]
+						New_file_name= str(tmp_location_tp)+'/'+base+'.png'
+						# path = os.rename(path, New_file_name)
+						# os.popen('mv '+path+' '+ New_file_name+';')
+						image[k] = cv2.imwrite(New_file_name,image[k])
+						# print(New_file_name)
+						k+=1
+					elif img.find(tp)>=0:
+						tmp_location_tp = os.path.join(tmp_location,tp)
+						if not os.path.exists(tmp_location_tp):
+							os.mkdir(tmp_location_tp)
+						tmp_location_img = str(os.path.join(tmp_location_tp, img))
+						os.popen('cp '+path+' ' + tmp_location_img+';')
 
 
-		# elif entry.find('C2')>=0:
-		# 	dataset_location = os.path.join(configure.dataset_prediction, entry)
-		# 	# print (dataset_location)
-		# 	tmp_location = os.path.join(temp_directory,'C2')
-		# 	os.mkdir(tmp_location)
-		# 	print(tmp_location)
-		# 	# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
-		# 	image = [np.zeros((2048,2048),np.int16)]*5
-		# 	path = ''
-		# 	k=0
-		# 	New_file_name = []
-		# 	# print('\n',dataset_location)
-		# 	for img in os.listdir(dataset_location):
-		# 		# print(img)
-		# 		# if img.find('_BRIGHTFIELD_')>=0:
-		# 		# 	os.popen('cp '+dataset_location+'/'+img+ ' ' + str(tmp_location)+';')
-		# 		if img.find('.tif')>=0:
-		# 			path = str(os.path.join(dataset_location, img))
-		# 			image[k] = cv2.imread(path,cv2.IMREAD_ANYDEPTH)
-		# 			# print(image[k])
-		# 			base = os.path.splitext(img)[0]
-		# 			New_file_name= str(tmp_location)+'/'+base+'.png'
-		# 			image[k] = cv2.imwrite(New_file_name,image[k])
-		# 			# print(New_file_name)
-		# 			k+=1
-		# 		else:
-		# 			os.popen('cp '+path+' ' + tmp_location_img+';')
 
-		# elif entry.find('E7')>=0:
-		# 	dataset_location = os.path.join(configure.dataset_prediction, entry)
-		# 	# print (dataset_location)
-		# 	tmp_location = os.path.join(temp_directory,'E7')
-		# 	os.mkdir(tmp_location)
-		# 	print(tmp_location)
-		# 	# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
-		# 	image = [np.zeros((2048,2048),np.int16)]*5
-		# 	path = ''
-		# 	k=0
-		# 	New_file_name = []
-		# 	# print('\n',dataset_location)
-		# 	for img in os.listdir(dataset_location):
-		# 		# print(img)
-		# 		# if img.find('_BRIGHTFIELD_')>=0:
-		# 		# 	os.popen('cp '+dataset_location+'/'+img+ ' ' + str(tmp_location)+';')
-		# 		if img.find('.tif')>=0:
-		# 			path = str(os.path.join(dataset_location, img))
-		# 			image[k] = cv2.imread(path,cv2.IMREAD_ANYDEPTH)
-		# 			# print(image[k])
-		# 			base = os.path.splitext(img)[0]
-		# 			New_file_name= str(tmp_location)+'/'+base+'.png'
-		# 			image[k] = cv2.imwrite(New_file_name,image[k])
-		# 			# os.popen('mv '+path+' '+ New_file_name+';')
-		# 			# print(New_file_name)
-		# 			k+=1
-		# 		else:
-		# 			os.popen('cp '+path+' ' + tmp_location_img+';')
 
 	# print('\n',"The temporary directory subfolders are: ", os.listdir(tmp_location),'\n')
 	return temp_directory;
@@ -290,12 +192,12 @@ def main():
 					process = subprocess.Popen(baz_cmd, shell=True, stdout=subprocess.PIPE)
 					process.wait()
 
-		# print("Bazel Shutdown")
+	# print("Bazel Shutdown")
 
-		#Here we shutdown the Bazel program.
-		# cmd3 = [base_directory_path + 'bazel shutdown;']
-		# process3 = subprocess.Popen(cmd3, shell=True, stdout=subprocess.PIPE)
-		# process3.wait()
+	# # Here we shutdown the Bazel program.
+	# cmd3 = [base_directory_path + 'bazel shutdown;']
+	# process3 = subprocess.Popen(cmd3, shell=True, stdout=subprocess.PIPE)
+	# process3.wait()
 
 	# else:
 	# 	continue
