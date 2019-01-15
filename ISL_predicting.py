@@ -15,7 +15,7 @@ import cv2
 import numpy as np
 
 global temp_directory, tmp_location, dataset_prediction, VALID_WELLS, VALID_TIMEPOINTS
-# temp_directory = '/home/sinadabiri/galaxy-new2/galaxy/database/tmp/'
+
 
 INPUT_PATH = ''
 ROBO_NUMBER = None
@@ -27,88 +27,40 @@ tmp_location_img = ''
 
 def image_feeder(dataset_prediction, valid_wells, valid_timepoints):
 
-	global BG_WELL_DICT
-	# input_image_stack_list, BG_WELL_DICT = background_removal_mp.get_image_tokens_list(INPUT_PATH, ROBO_NUMBER, IMAGING_MODE, VALID_WELLS, VALID_TIMEPOINTS, BG_WELL)
-
-	# get channels
-	# channels = set([x[0][4] for x in image_stack_list])
-
-	# get rows and columns
-	# rows = background_removal_mp.natural_sort(set([re.search(r'[A-P]', x).group(0) for x in VALID_WELLS]))
-	# columns = background_removal_mp.natural_sort(set([re.search(r'\d{1,2}', x).group(0) for x in VALID_WELLS]))
-
-  # build list of wells in the imaging order (i.e. snaking across the plate)
-	wells_ordered = []
-	# for r in rows:
-	# 	for c in columns:
-	# 		well = r + c
-	# 		if any(well in x for x in VALID_WELLS):
-	# 			wells_ordered.extend([well])
-	# 			columns = list(reversed(columns))
-
-  # reorder image list by imaging order so that batches contain neighboring wells
-	# image_stack_list.sort(key=lambda x:sum(wells_ordered.index(i[3]) for i in x))
-
-	# for ch in channels:
-	# 	for tp in VALID_TIMEPOINTS:
-	# 		# subset list by images from current channel and timepoint
-	# 		image_stack_list_ch = [[tokens for tokens in montage if tokens[4] == ch if tokens[5] == tp] for montage in image_stack_list]
-
-			# remove empty lists for non-matching channels (couldn't figure out how to do it in the above list comprehension)
-			# image_stack_list_ch = [x for x in image_stack_list_ch if x]
-
-
-			# if os.path.exists(temp_directory):
-			# 	os.mkdir(os.path.join(output_path,temp_directory))
-			# 	assert os.path.exists(temp_directory), 'Path to input images.'
-			# with os.scandir(dataset_prediction) as location:
-
 	temp_directory = tempfile.mkdtemp()
-	# '/tmp' did not work. It creastes the tmp folder in galaxy/database subfolder.
+
 	print('The created Temp Directory is: ', temp_directory,'\n')
 	print('The subfolders in dataset_prediction folder are: ',os.listdir(configure.dataset_prediction),'\n')
 
 	print("VALID_WELLS: ", VALID_WELLS, '\n')
 	print("VALID_TIMEPOINTS: ", VALID_TIMEPOINTS, '\n')
-# VALID_WELLS
+
 	for entry in VALID_WELLS:
 		if entry.find('')>= 0 :
 			dataset_location = os.path.join(configure.dataset_prediction, entry)
-			# print (dataset_location)
 			tmp_location = os.path.join(temp_directory,entry)
 			if not os.path.exists(tmp_location):
 				os.mkdir(tmp_location)
-			# print(tmp_location)
-			# tmp_location is better
-			# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
+
 			image = [np.zeros((2048,2048),np.int16)]*15
 			path = ''
 			k=0
 			New_file_name = []
-			# print('\n',dataset_location)
 
 			for img in os.listdir(dataset_location):
-				# if img.find('_BRIGHTFIELD_')>=0:
-				# 	os.popen('cp '+dataset_location+'/'+img+' ' + str(tmp_location)+'/'+img+';')
 				path = str(os.path.join(dataset_location, img))
 
 				for tp in VALID_TIMEPOINTS:
-					# print('Running timepoint: ', tp, '\n')
 					if (img.find('.tif')>=0 and img.find(tp)>=0):
 						image[k] = cv2.imread(path,cv2.IMREAD_ANYDEPTH)
-						# print(image[k])
 						tmp_location_tp = os.path.join(tmp_location,tp)
 						if not os.path.exists(tmp_location_tp):
 							os.mkdir(tmp_location_tp)
-						# print(tmp_location_tp)
 						tmp_location_img = str(os.path.join(tmp_location_tp, img))
 
 						base = os.path.splitext(img)[0]
 						New_file_name= str(tmp_location_tp)+'/'+base+'.png'
-						# path = os.rename(path, New_file_name)
-						# os.popen('mv '+path+' '+ New_file_name+';')
 						image[k] = cv2.imwrite(New_file_name,image[k])
-						# print(New_file_name)
 						k+=1
 					elif img.find(tp)>=0:
 						tmp_location_tp = os.path.join(tmp_location,tp)
@@ -117,10 +69,6 @@ def image_feeder(dataset_prediction, valid_wells, valid_timepoints):
 						tmp_location_img = str(os.path.join(tmp_location_tp, img))
 						os.popen('cp '+path+' ' + tmp_location_img+';')
 
-
-
-
-	# print('\n',"The temporary directory subfolders are: ", os.listdir(tmp_location),'\n')
 	return temp_directory;
 
 def main():
@@ -135,41 +83,31 @@ def main():
 
 	"""
 
-		# temp_directory = image_feeder(configure.dataset_prediction)
-	#Making sure the Bazel program has been shutdown properly.
 	base_directory_path = 'cd '+ configure.base_directory + '; '
-	# cmd1 = [base_directory_path + 'bazel version;']
-	# process1 = subprocess.Popen(cmd1, shell=True, stdout=subprocess.PIPE)
-	# process1.wait()
+
 	temp_directory = image_feeder(configure.dataset_prediction, VALID_WELLS, VALID_TIMEPOINTS)
 
-	print('\n','The temp_directory: ',temp_directory,'\n')
-
-
-	# Loop through subfolders in the dataset folder
-# VALID_WELLS
 	for w in os.listdir(temp_directory):
 		date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
 		print(w)
-		if (w.find(''))>=0:
+		if (w.find('G11'))>=0:
 			dataset_eval_path_w = str(os.path.join(temp_directory, w))
 			print(dataset_eval_path_w, '\n')
 			print('\n','The temp_directory subfolders are: ',os.listdir(dataset_eval_path_w),'\n')
-# ----
+
 			for tp in os.listdir(dataset_eval_path_w):
 				print(tp)
 				print('The temp_directory',dataset_eval_path_w)
-				if tp.find('')>=0:
+				if tp.find('T0')>=0:
 					dataset_eval_path_tp = str(os.path.join(dataset_eval_path_w, tp))
 					print(dataset_eval_path_tp, '\n')
-# -----
+
 			#Running Bazel for prediction. Note txt log files are also being created incase troubleshooting is needed.
 					date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
 					dataset_eval_path = dataset_eval_path_tp
-					# str(os.path.join(temp_directory, w))
 					print("Dataset Eval Path is: ",dataset_eval_path_tp,'\n')
 					print("Inference channels are: ", infer_channels)
-					print("Bazel Launching", '\n')
+					print("Bazel Launching--------------------------------------------", '\n')
 
 					base_dir = 'export BASE_DIRECTORY=' + configure.base_directory + '/isl;  '
 
@@ -191,16 +129,6 @@ def main():
 						# '_'+ tp +
 					process = subprocess.Popen(baz_cmd, shell=True, stdout=subprocess.PIPE)
 					process.wait()
-
-	# print("Bazel Shutdown")
-
-	# # Here we shutdown the Bazel program.
-	# cmd3 = [base_directory_path + 'bazel shutdown;']
-	# process3 = subprocess.Popen(cmd3, shell=True, stdout=subprocess.PIPE)
-	# process3.wait()
-
-	# else:
-	# 	continue
 
 	return
 
@@ -241,14 +169,9 @@ if __name__ == '__main__':
 	INPUT_PATH = args.dataset_eval_path
 	OUTPUT_PATH = args.output_path
 
-	# BG_WELL = bg_well
-	# ROBO_NUMBER = int(var_dict['RoboNumber'])
-	# IMAGING_MODE = var_dict['ImagingMode']
+
 	VALID_WELLS = var_dict['Wells']
 	VALID_TIMEPOINTS = var_dict['TimePoints']
-
-	# print("VALID_WELLS: ", VALID_WELLS, '\n')
-	# print("VALID_TIMEPOINTS: ", VALID_TIMEPOINTS, '\n')
 
 	if model_location != '':
 		model_location = '--restore_directory ' + configure.model_location
@@ -260,7 +183,7 @@ if __name__ == '__main__':
 	# ----Confirm given folders exist--
 	if not os.path.exists(dataset_eval_path):
 		print('Confirm the given path to input images (transmitted images used to generate prediction image) exists.')
-		assert os.path.exists(dataset_eval_path), 'Path to input images (transmitted images used to generate prediction image).'
+		assert os.path.exists(dataset_eval_path), 'Path to input images used to generate prediction image is wrong.'
 		if not os.path.exists(output_path):
 			print('Confirm the given path to output of prediction for fluorescent and validation images exists.')
 

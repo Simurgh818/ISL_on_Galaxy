@@ -20,41 +20,6 @@ tmp_location = ''
 
 def image_feeder(dataset_training, valid_wells, valid_timepoints):
 
-	global BG_WELL_DICT
-	# input_image_stack_list, BG_WELL_DICT = background_removal_mp.get_image_tokens_list(INPUT_PATH, ROBO_NUMBER, IMAGING_MODE, VALID_WELLS, VALID_TIMEPOINTS, BG_WELL)
-
-	# get channels
-	# channels = set([x[0][4] for x in image_stack_list])
-
-	# get rows and columns
-	# rows = background_removal_mp.natural_sort(set([re.search(r'[A-P]', x).group(0) for x in VALID_WELLS]))
-	# columns = background_removal_mp.natural_sort(set([re.search(r'\d{1,2}', x).group(0) for x in VALID_WELLS]))
-
-  # build list of wells in the imaging order (i.e. snaking across the plate)
-	wells_ordered = []
-	# for r in rows:
-	# 	for c in columns:
-	# 		well = r + c
-	# 		if any(well in x for x in VALID_WELLS):
-	# 			wells_ordered.extend([well])
-	# 			columns = list(reversed(columns))
-
-  # reorder image list by imaging order so that batches contain neighboring wells
-	# image_stack_list.sort(key=lambda x:sum(wells_ordered.index(i[3]) for i in x))
-
-	# for ch in channels:
-	# 	for tp in VALID_TIMEPOINTS:
-	# 		# subset list by images from current channel and timepoint
-	# 		image_stack_list_ch = [[tokens for tokens in montage if tokens[4] == ch if tokens[5] == tp] for montage in image_stack_list]
-
-			# remove empty lists for non-matching channels (couldn't figure out how to do it in the above list comprehension)
-			# image_stack_list_ch = [x for x in image_stack_list_ch if x]
-
-
-			# if os.path.exists(temp_directory):
-			# 	os.mkdir(os.path.join(output_path,temp_directory))
-			# 	assert os.path.exists(temp_directory), 'Path to input images.'
-			# with os.scandir(dataset_training) as location:
 	temp_directory = tempfile.mkdtemp()
 	print('The created Temp Directory is: ', temp_directory,'\n')
 	print('The subfolders in dataset_training folder are: ',os.listdir(configure.dataset_training),'\n')
@@ -64,26 +29,20 @@ def image_feeder(dataset_training, valid_wells, valid_timepoints):
 	for entry in VALID_WELLS:
 		if entry.find('')>= 0 :
 			dataset_location = os.path.join(configure.dataset_training, entry)
-			# print (dataset_location)
 			tmp_location = os.path.join(temp_directory,entry)
 			if not os.path.exists(tmp_location):
 				os.mkdir(tmp_location)
-			# print(tmp_location)
-			# tmp_location is better
-			# os.popen('cp -r '+ dataset_location+ ' ' + str(tmp_location)+';')
+
 			image = [np.zeros((2048,2048),np.int16)]*15
 			path = ''
 			k=0
 			New_file_name = []
-			# print('\n',dataset_location)
+
 
 			for img in os.listdir(dataset_location):
-				# if img.find('_BRIGHTFIELD_')>=0:
-				# 	os.popen('cp '+dataset_location+'/'+img+' ' + str(tmp_location)+'/'+img+';')
 				path = str(os.path.join(dataset_location, img))
 
 				for tp in VALID_TIMEPOINTS:
-					# print('Running timepoint: ', tp, '\n')
 					if (img.find('.tif')>=0 and img.find(tp)>=0):
 						image[k] = cv2.imread(path,cv2.IMREAD_ANYDEPTH)
 						# print(image[k])
@@ -95,10 +54,7 @@ def image_feeder(dataset_training, valid_wells, valid_timepoints):
 
 						base = os.path.splitext(img)[0]
 						New_file_name= str(tmp_location_tp)+'/'+base+'.png'
-						# path = os.rename(path, New_file_name)
-						# os.popen('mv '+path+' '+ New_file_name+';')
 						image[k] = cv2.imwrite(New_file_name,image[k])
-						# print(New_file_name)
 						k+=1
 					elif img.find(tp)>=0:
 						tmp_location_tp = os.path.join(tmp_location,tp)
@@ -124,21 +80,16 @@ def main():
 	"""
 
 
-	#Making sure the Bazel program has been shutdown properly.
 	base_directory_path = 'cd '+ configure.base_directory + '; '
-	# cmd1 = [base_directory_path + 'bazel shutdown;']
-	# process1 = subprocess.Popen(cmd1, shell=True, stdout=subprocess.PIPE)
-	# process1.wait()
+
 	temp_directory = image_feeder(configure.dataset_training, VALID_WELLS, VALID_TIMEPOINTS)
 
 	print('\n','The temp_directory: ',temp_directory,'\n')
 
-	# Loop through subfolders in the dataset folder
 
 	for folder in os.listdir(configure.dataset_training):
 
 		# Loop through subfolders in the dataset folder
-	# VALID_WELLS
 		for w in os.listdir(temp_directory):
 			date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
 			print(w)
@@ -146,23 +97,21 @@ def main():
 				dataset_train_path_w = str(os.path.join(temp_directory, w))
 				print(dataset_train_path_w, '\n')
 				print('\n','The temp_directory subfolders are: ',os.listdir(dataset_train_path_w),'\n')
-	# ----
+
 				for tp in os.listdir(dataset_train_path_w):
 					print(tp)
 					print('The temp_directory',dataset_train_path_w)
-					if tp.find('')>=0:
+					if tp.find('T0')>=0:
 						dataset_train_path_tp = str(os.path.join(dataset_train_path_w, tp))
 						print(dataset_train_path_tp, '\n')
-	# -----
-				#Running Bazel for prediction. Note txt log files are also being created incase troubleshooting is needed.
+
 						date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
 						dataset_train_path = dataset_train_path_tp
-						# str(os.path.join(temp_directory, w))
+
 						print("Dataset Train Path is: ",dataset_train_path_tp,'\n')
 
 						print("Bazel Launching")
 
-						# The directory where the checkpoints in 'train' subfolder will be saved.
 						base_dir = 'export BASE_DIRECTORY=' + configure.base_directory + '/isl; '
 
 						cmd2 = [base_directory_path + base_dir + 'bazel run isl:launch -- \
@@ -182,22 +131,10 @@ def main():
 						process2 = subprocess.Popen(cmd2, shell=True, stdout=subprocess.PIPE)
 						process2.wait()
 
-						# print("Bazel Shutdown")
-
-						# #Here we shutdown the Bazel program.
-						# cmd3 = [base_directory_path + 'bazel shutdown;']
-						# process3 = subprocess.Popen(cmd3, shell=True, stdout=subprocess.PIPE)
-						# process3.wait()
 			else:
 				continue
 
 			return
-
-	## Launch tensorboard disabled for cluster.
-	# cmd2 = ['tensorboard --logdir /home/sinadabiri/venvs/in-silico-labeling-master/isl']
-	# process2 = subprocess.Popen(cmd2, shell=True, stdout=subprocess.PIPE)
-	# process2.wait()
-	# output2 = process2.communicate()[0]
 
 	print("Model checkpoints are written to:")
 	print(output_path)
