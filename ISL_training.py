@@ -3,16 +3,13 @@
 
 import subprocess
 import argparse, pickle, os, sys
-# sys.path.append('/finkbeiner/imaging/smb-robodata/Sina/ISL_Scripts/')
-sys.path.append('/mnt/finkbeinernas/robodata/Sina/')
-import configure
 from datetime import datetime
 from time import strftime
 import tempfile
 import cv2
 import numpy as np
 
-global temp_directory, dataset_training, VALID_WELLS, VALID_TIMEPOINTS
+global temp_directory, dataset_training, VALID_WELLS, VALID_TIMEPOINTS,dataset_train_path
 
 VALID_WELLS = []
 VALID_TIMEPOINTS = []
@@ -20,15 +17,15 @@ tmp_location = ''
 
 def image_feeder(dataset_training, valid_wells, valid_timepoints):
 
-	temp_directory = tempfile.mkdtemp()
-	print('The created Temp Directory is: ', temp_directory,'\n')
-	print('The subfolders in dataset_training folder are: ',os.listdir(configure.dataset_training),'\n')
+	print('The subfolders in dataset_training folder are: ',os.listdir(dataset_train_path),'\n')
 	print("VALID_WELLS: ", VALID_WELLS, '\n')
 	print("VALID_TIMEPOINTS: ", VALID_TIMEPOINTS, '\n')
+	temp_directory = tempfile.mkdtemp(dir = output_path)
+	print('The created Temp Directory is: ', temp_directory,'\n')
 
 	for entry in VALID_WELLS:
 		if entry.find('')>= 0 :
-			dataset_location = os.path.join(configure.dataset_training, entry)
+			dataset_location = os.path.join(dataset_train_path, entry)
 			tmp_location = os.path.join(temp_directory,entry)
 			if not os.path.exists(tmp_location):
 				os.mkdir(tmp_location)
@@ -41,9 +38,9 @@ def image_feeder(dataset_training, valid_wells, valid_timepoints):
 
 			for img in os.listdir(dataset_location):
 				path = str(os.path.join(dataset_location, img))
-
+				time_point = os.path.basename(img).split('_')[2]
 				for tp in VALID_TIMEPOINTS:
-					if (img.find('.tif')>=0 and img.find(tp)>=0):
+					if (img.endswith('.tif')>=0 and time_point==tp):
 						image[k] = cv2.imread(path,cv2.IMREAD_ANYDEPTH)
 						# print(image[k])
 						tmp_location_tp = os.path.join(tmp_location,tp)
@@ -56,7 +53,7 @@ def image_feeder(dataset_training, valid_wells, valid_timepoints):
 						New_file_name= str(tmp_location_tp)+'/'+base+'.png'
 						image[k] = cv2.imwrite(New_file_name,image[k])
 						k+=1
-					elif img.find(tp)>=0:
+					elif time_point==tp:
 						tmp_location_tp = os.path.join(tmp_location,tp)
 						if not os.path.exists(tmp_location_tp):
 							os.mkdir(tmp_location_tp)
@@ -80,61 +77,61 @@ def main():
 	"""
 
 
-	base_directory_path = 'cd '+ configure.base_directory + '; '
-
-	temp_directory = image_feeder(configure.dataset_training, VALID_WELLS, VALID_TIMEPOINTS)
-
-	print('\n','The temp_directory: ',temp_directory,'\n')
+	base_directory_path = 'cd '+ base_directory + '; '
 
 
-	for folder in os.listdir(configure.dataset_training):
 
-		# Loop through subfolders in the dataset folder
-		for w in os.listdir(temp_directory):
-			date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
-			print(w)
-			if (w.find('G11'))>=0:
-				dataset_train_path_w = str(os.path.join(temp_directory, w))
-				print(dataset_train_path_w, '\n')
-				print('\n','The temp_directory subfolders are: ',os.listdir(dataset_train_path_w),'\n')
+	# Loop through subfolders in the dataset folder
+	for w in os.listdir(temp_directory):
+		date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
+		print(w)
+		if (w.find('G11'))>=0:
+			dataset_train_path_w = str(os.path.join(temp_directory, w))
+			print(dataset_train_path_w, '\n')
+			print('\n','The temp_directory subfolders are: ',os.listdir(dataset_train_path_w),'\n')
 
-				for tp in os.listdir(dataset_train_path_w):
-					print(tp)
-					print('The temp_directory',dataset_train_path_w)
-					if tp.find('T0')>=0:
-						dataset_train_path_tp = str(os.path.join(dataset_train_path_w, tp))
-						print(dataset_train_path_tp, '\n')
+			for tp in os.listdir(dataset_train_path_w):
+				print(tp)
+				print('The temp_directory',dataset_train_path_w)
+				if tp.find('T0')>=0:
+					dataset_train_path_tp = str(os.path.join(dataset_train_path_w, tp))
+					print(dataset_train_path_tp, '\n')
 
-						date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
-						dataset_train_path = dataset_train_path_tp
+					date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
+					dataset_train_path = dataset_train_path_tp
 
-						print("Dataset Train Path is: ",dataset_train_path_tp,'\n')
+					print("Dataset Train Path is: ",dataset_train_path_tp,'\n')
 
-						print("Bazel Launching")
+					print("Bazel Launching")
 
-						base_dir = 'export BASE_DIRECTORY=' + configure.base_directory + '/isl; '
+					base_dir = 'export BASE_DIRECTORY=' + base_directory + '/isl; '
 
-						cmd2 = [base_directory_path + base_dir + 'bazel run isl:launch -- \
-						--alsologtostderr \
-						--base_directory $BASE_DIRECTORY \
-						--mode TRAIN \
-						--metric LOSS \
-						--master "" \
-						--restore_directory '+ configure.model_location + ' \
-						--output_path '+ output_path + ' \
-						--read_pngs \
-						--dataset_train_directory ' + dataset_train_path + ' \
-						--until_step ' + until_step + ' \
-						> ' + output_path + '/training_output_'+ date_time + '_'+ w + '_'+ tp +'_images.txt \
-						2> ' + output_path + '/training_error_'+ date_time + '_'+ w + '_'+ tp +'_images.txt;']
+					cmd2 = [base_directory_path + base_dir + 'bazel run isl:launch -- \
+					--alsologtostderr \
+					--base_directory $BASE_DIRECTORY \
+					--mode TRAIN \
+					--metric LOSS \
+					--master "" \
+					--restore_directory '+ model_location + ' \
+					--output_directory '+ output_path + ' \
+					--read_pngs \
+					--dataset_train_directory ' + dataset_train_path + ' \
+					--until_step ' + until_step + ' \
+					> ' + output_path + '/training_output_'+ date_time + '_'+ w + '_'+ tp +'_images.txt \
+					2> ' + output_path + '/training_error_'+ date_time + '_'+ w + '_'+ tp +'_images.txt;']
 
-						process2 = subprocess.Popen(cmd2, shell=True, stdout=subprocess.PIPE)
-						process2.wait()
+					process2 = subprocess.Popen(cmd2, shell=True, stdout=subprocess.PIPE)
+					process2.wait()
 
-			else:
-				continue
+		else:
+			continue
 
-			return
+		# Here we delete the temp folder.
+		print("temp_directory is going to be removed: ",temp_directory)
+		cmd3 = ['rm -r ' + temp_directory + ';']
+		process3 = subprocess.Popen(cmd3, shell=True, stdout=subprocess.PIPE)
+		process3.wait()
+		return
 
 	print("Model checkpoints are written to:")
 	print(output_path)
@@ -163,6 +160,7 @@ if __name__ == '__main__':
 	var_dict = pickle.load(open(infile, 'rb'))
 
 	# ----Initialize parameters------------------
+	base_directory = '/home/sinadabiri/venvs/in-silico-labeling-master'
 	dataset_train_path = args.dataset_train_path
 	model_location = args.model_location
 	output_path = args.output_path
@@ -172,6 +170,7 @@ if __name__ == '__main__':
 	VALID_WELLS = var_dict['Wells']
 	VALID_TIMEPOINTS = var_dict['TimePoints']
 
+	temp_directory = image_feeder(dataset_train_path, VALID_WELLS, VALID_TIMEPOINTS)
 	# ----Confirm given folders exist--
 	if not os.path.exists(dataset_train_path):
 		print ('Confirm the given path to input images (transmitted images used for training) exists.')
@@ -186,5 +185,6 @@ if __name__ == '__main__':
 				assert os.path.abspath(output_path) != os.path.abspath(model_location),  'Please provide unique output path  (not model or data path).'
 
 				date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
+
 	main()
 

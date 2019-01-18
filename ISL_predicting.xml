@@ -22,7 +22,7 @@ echo "End of Prediction";
 	<param name="crop_size" type="text" label="Select Crop Size between 285 and 1500." help="The default value is 1500. One can chose smaller value like 375 for faster processing." value = "300" />
 
 	<!-- /finkbeiner/imaging/smb-robodata/Sina/checkpoints -->
-	<param name="model_location" type="text" format="text" label="Specify path to model." value="/finkbeiner/imaging/home/in-silico/checkpoints" help="The default value is ISL model: /finkbeiner/imaging/home/in-silico/in-silico-labeling/isl/checkpoints. If left blank it will train a new model!"/>
+	<param name="model_location" type="text" format="text" label="Specify path to model." value="/finkbeiner/imaging/home/in-silico/checkpoints" help="The default value is ISL model: /finkbeiner/imaging/home/in-silico/in-silico-labeling/isl/checkpoints."/>
 
 	<!-- /finkbeiner/imaging/smb-robodata/Sina -->
 	<param name="output_path" type="text" format="text" label="Specify path for the output, where the predicted images will be saved." help="For example: /finkbeiner/imaging/smb-robodata/Sina/LogFiles" size="70" />

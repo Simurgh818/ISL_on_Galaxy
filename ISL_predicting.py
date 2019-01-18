@@ -3,18 +3,13 @@
 
 import subprocess
 import argparse, pickle, os, sys, shutil
-sys.path.append('/mnt/finkbeinernas/robodata/Sina/')
-import configure
-# sys.path.append('/home/sinadabiri/galaxy-neuron-analysis/galaxy/tools/dev_staging_modules')
-# import utils
-# from background_removal_mp import get_image_token_list
 from datetime import datetime
 from time import strftime
 import tempfile
 import cv2
 import numpy as np
 
-global temp_directory, tmp_location, dataset_prediction, VALID_WELLS, VALID_TIMEPOINTS
+global temp_directory, tmp_location, dataset_prediction, VALID_WELLS, VALID_TIMEPOINTS,dataset_eval_path
 
 
 INPUT_PATH = ''
@@ -27,17 +22,17 @@ tmp_location_img = ''
 
 def image_feeder(dataset_prediction, valid_wells, valid_timepoints):
 
-	temp_directory = tempfile.mkdtemp()
+	temp_directory = tempfile.mkdtemp(dir = output_path)
 
-	print('The created Temp Directory is: ', temp_directory,'\n')
-	print('The subfolders in dataset_prediction folder are: ',os.listdir(configure.dataset_prediction),'\n')
-
+	print('The subfolders in dataset_prediction folder are: ',os.listdir(dataset_eval_path),'\n')
 	print("VALID_WELLS: ", VALID_WELLS, '\n')
 	print("VALID_TIMEPOINTS: ", VALID_TIMEPOINTS, '\n')
+	print('The created Temp Directory is: ', temp_directory,'\n')
+
 
 	for entry in VALID_WELLS:
 		if entry.find('')>= 0 :
-			dataset_location = os.path.join(configure.dataset_prediction, entry)
+			dataset_location = os.path.join(dataset_eval_path, entry)
 			tmp_location = os.path.join(temp_directory,entry)
 			if not os.path.exists(tmp_location):
 				os.mkdir(tmp_location)
@@ -46,12 +41,11 @@ def image_feeder(dataset_prediction, valid_wells, valid_timepoints):
 			path = ''
 			k=0
 			New_file_name = []
-
 			for img in os.listdir(dataset_location):
 				path = str(os.path.join(dataset_location, img))
-
+				time_point = os.path.basename(img).split('_')[2]
 				for tp in VALID_TIMEPOINTS:
-					if (img.find('.tif')>=0 and img.find(tp)>=0):
+					if (img.endswith('.tif')>=0 and time_point==tp):
 						image[k] = cv2.imread(path,cv2.IMREAD_ANYDEPTH)
 						tmp_location_tp = os.path.join(tmp_location,tp)
 						if not os.path.exists(tmp_location_tp):
@@ -62,7 +56,7 @@ def image_feeder(dataset_prediction, valid_wells, valid_timepoints):
 						New_file_name= str(tmp_location_tp)+'/'+base+'.png'
 						image[k] = cv2.imwrite(New_file_name,image[k])
 						k+=1
-					elif img.find(tp)>=0:
+					elif time_point==tp:
 						tmp_location_tp = os.path.join(tmp_location,tp)
 						if not os.path.exists(tmp_location_tp):
 							os.mkdir(tmp_location_tp)
@@ -83,24 +77,19 @@ def main():
 
 	"""
 
-	base_directory_path = 'cd '+ configure.base_directory + '; '
-
-	temp_directory = image_feeder(configure.dataset_prediction, VALID_WELLS, VALID_TIMEPOINTS)
+	base_directory_path = 'cd '+ base_directory + '; '
 
 	for w in os.listdir(temp_directory):
 		date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
-		print(w)
+		print("We are on well: ",w)
 		if (w.find('G11'))>=0:
 			dataset_eval_path_w = str(os.path.join(temp_directory, w))
-			print(dataset_eval_path_w, '\n')
+			print("dataset_eval_path_w is: ",dataset_eval_path_w, '\n')
 			print('\n','The temp_directory subfolders are: ',os.listdir(dataset_eval_path_w),'\n')
 
 			for tp in os.listdir(dataset_eval_path_w):
-				print(tp)
-				print('The temp_directory',dataset_eval_path_w)
 				if tp.find('T0')>=0:
 					dataset_eval_path_tp = str(os.path.join(dataset_eval_path_w, tp))
-					print(dataset_eval_path_tp, '\n')
 
 			#Running Bazel for prediction. Note txt log files are also being created incase troubleshooting is needed.
 					date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
@@ -109,7 +98,7 @@ def main():
 					print("Inference channels are: ", infer_channels)
 					print("Bazel Launching--------------------------------------------", '\n')
 
-					base_dir = 'export BASE_DIRECTORY=' + configure.base_directory + '/isl;  '
+					base_dir = 'export BASE_DIRECTORY=' + base_directory + '/isl;  '
 
 					baz_cmd = [base_directory_path + base_dir + 'bazel run isl:launch -- \
 					--alsologtostderr \
@@ -117,18 +106,26 @@ def main():
 					--mode EVAL_EVAL \
 					--metric INFER_FULL \
 					--stitch_crop_size '+ crop_size + ' \
-					--restore_directory '+ configure.model_location + ' \
+					--restore_directory '+ model_location + ' \
 					--output_path '+ output_path + ' \
 					--read_pngs \
 					--dataset_eval_directory ' + dataset_eval_path_tp + ' \
 					--infer_channel_whitelist ' + infer_channels + ' \
 					--error_panels False \
 					--infer_simplify_error_panels \
-					> ' + OUTPUT_PATH + '/predicting_output_'+ mod + '_'+ date_time +'_'+ crop_size +'_'+ w +'_'+ tp +'_images.txt \
-					2> ' + OUTPUT_PATH + '/predicting_error_'+ mod + '_'+ date_time +'_'+ crop_size + '_'+ w + '_'+ tp +'_images.txt;']
+					> ' + output_path + '/predicting_output_'+ mod + '_'+ date_time +'_'+
+					crop_size +'_'+ w +'_'+ tp +'_images.txt \
+					2> ' + output_path + '/predicting_error_'+ mod + '_'+ date_time +'_'+
+					crop_size + '_'+ w + '_'+ tp +'_images.txt;']
 						# '_'+ tp +
 					process = subprocess.Popen(baz_cmd, shell=True, stdout=subprocess.PIPE)
 					process.wait()
+
+	# Here we delete the temp folder.
+	print("temp_directory is going to be removed: ",temp_directory)
+	cmd3 = ['rm -r ' + temp_directory + ';']
+	process3 = subprocess.Popen(cmd3, shell=True, stdout=subprocess.PIPE)
+	process3.wait()
 
 	return
 
@@ -151,13 +148,10 @@ if __name__ == '__main__':
 	# ----Load path dict-------------------------
 	infile = args.infile
 	var_dict = pickle.load(open(infile, 'rb'))
-	# print("var_dict: ", var_dict, '\n')
-
 
   # ----Initialize parameters------------------
-	# bg_well = str.strip(args.chosen_bg_well) if args.chosen_bg_well else None
-
 	crop_size = args.crop_size
+	base_directory = '/home/sinadabiri/venvs/in-silico-labeling-master'
 	model_location = args.model_location
 	output_path = args.output_path
 	dataset_eval_path = args.dataset_eval_path
@@ -167,18 +161,19 @@ if __name__ == '__main__':
 	# outfile = shutil.move('var_dict.p', outfile)
 
 	INPUT_PATH = args.dataset_eval_path
-	OUTPUT_PATH = args.output_path
+
 
 
 	VALID_WELLS = var_dict['Wells']
 	VALID_TIMEPOINTS = var_dict['TimePoints']
 
 	if model_location != '':
-		model_location = '--restore_directory ' + configure.model_location
 		mod = 'ISL-Model'
 	else:
 		model_location = ''
 		mod = 'Your-Model'
+
+	temp_directory = image_feeder(dataset_eval_path, VALID_WELLS, VALID_TIMEPOINTS)
 
 	# ----Confirm given folders exist--
 	if not os.path.exists(dataset_eval_path):
@@ -192,10 +187,8 @@ if __name__ == '__main__':
 
 			date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
 
-			print('\n The Evaluation Directory is:')
-			print(dataset_eval_path)
-			print('\n The Output Directory is:')
-			print(output_path)
+			print('\n The Evaluation Directory is: ', dataset_eval_path)
+			print('\n The Output Directory is: ',output_path)
 			print('\n ')
 
 
