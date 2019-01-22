@@ -23,18 +23,18 @@ def image_feeder(dataset_training, valid_wells, valid_timepoints):
 	temp_directory = tempfile.mkdtemp(dir = output_path)
 	print('The created Temp Directory is: ', temp_directory,'\n')
 
-	for entry in VALID_WELLS:
-		if entry.find('')>= 0 :
+	# For our dataset the following loop should be: for entry in VALID_WELLS: instead.
+	for entry in os.listdir(dataset_train_path):
+		if entry.find('mike_sam_0')>= 0 :
 			dataset_location = os.path.join(dataset_train_path, entry)
 			tmp_location = os.path.join(temp_directory,entry)
 			if not os.path.exists(tmp_location):
 				os.mkdir(tmp_location)
 
-			image = [np.zeros((2048,2048),np.int16)]*15
+			image = [np.zeros((3750,3748),np.int16)]*28
 			path = ''
 			k=0
 			New_file_name = []
-
 
 			for img in os.listdir(dataset_location):
 				path = str(os.path.join(dataset_location, img))
@@ -85,7 +85,7 @@ def main():
 	for w in os.listdir(temp_directory):
 		date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
 		print(w)
-		if (w.find('G11'))>=0:
+		if (w.find('mike_sam_0'))>=0:
 			dataset_train_path_w = str(os.path.join(temp_directory, w))
 			print(dataset_train_path_w, '\n')
 			print('\n','The temp_directory subfolders are: ',os.listdir(dataset_train_path_w),'\n')

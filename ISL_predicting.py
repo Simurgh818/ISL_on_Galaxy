@@ -29,21 +29,22 @@ def image_feeder(dataset_prediction, valid_wells, valid_timepoints):
 	print("VALID_TIMEPOINTS: ", VALID_TIMEPOINTS, '\n')
 	print('The created Temp Directory is: ', temp_directory,'\n')
 
-
-	for entry in VALID_WELLS:
-		if entry.find('')>= 0 :
+# For our dataset the following loop should be: for entry in VALID_WELLS: instead.
+	for entry in os.listdir(dataset_eval_path):
+		if entry.find('kevan_0_8')>= 0 :
 			dataset_location = os.path.join(dataset_eval_path, entry)
 			tmp_location = os.path.join(temp_directory,entry)
 			if not os.path.exists(tmp_location):
 				os.mkdir(tmp_location)
 
-			image = [np.zeros((2048,2048),np.int16)]*15
+			image = [np.zeros((4885,4903),np.int16)]*16
 			path = ''
 			k=0
 			New_file_name = []
 			for img in os.listdir(dataset_location):
 				path = str(os.path.join(dataset_location, img))
 				time_point = os.path.basename(img).split('_')[2]
+				# print("The time point is: ",time_point)
 				for tp in VALID_TIMEPOINTS:
 					if (img.endswith('.tif')>=0 and time_point==tp):
 						image[k] = cv2.imread(path,cv2.IMREAD_ANYDEPTH)
@@ -82,7 +83,7 @@ def main():
 	for w in os.listdir(temp_directory):
 		date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
 		print("We are on well: ",w)
-		if (w.find('G11'))>=0:
+		if (w.find('kevan_0_8'))>=0:
 			dataset_eval_path_w = str(os.path.join(temp_directory, w))
 			print("dataset_eval_path_w is: ",dataset_eval_path_w, '\n')
 			print('\n','The temp_directory subfolders are: ',os.listdir(dataset_eval_path_w),'\n')

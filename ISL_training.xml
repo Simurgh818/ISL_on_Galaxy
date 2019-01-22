@@ -19,16 +19,17 @@ echo "End of Training";
 <inputs>
 	<param name="infile" type="data" format="data" label="Local variables dictionary (output from 'Create Folders')."/>
 
-	<!-- /finkbeiner/imaging/smb-robodata/Sina/data_sample/condition_e_sample_B2 -->
-	<param name="dataset_train_path" type="text" format="text" label="Specify path for training data images." value='/finkbeiner/imaging/home/in-silico/datasets/condition_e_sample_B2' help="For example: /finkbeiner/imaging/smb-robodata/Sina/data_sample/condition_e_sample_B2" size="70" />
+	<!-- /finkbeiner/imaging/home/in-silico/datasets/condition_e_sample_B2
+	condition_e_sample_B2 -->
+	<param name="dataset_train_path" type="text" format="text" label="Specify path for training data images." value="/finkbeiner/imaging/smb-robodata/Sina/data_sample/condition_b_sample2" help="For example: /finkbeiner/imaging/smb-robodata/Sina/data_sample/condition_e_sample_B2" size="70" />
 
 	<!-- /finkbeiner/imaging/smb-robodata/Sina/checkpoints -->
 	<param name="model_location" type="text" format="text" label="Specify model location. This is the path where the last model checkpoint is stored." value="/finkbeiner/imaging/home/in-silico/checkpoints" help="For example: /finkbeiner/imaging/home/in-silico/in-silico-labeling/isl/checkpoints" size="70" />
 
 	<!-- /finkbeiner/imaging/smb-robodata/Sina -->
-	<param name="output_path" type="text" format="text" label="Specify path for the output, where the new checkpoints will be saved in a subfolder called 'train'." help="For example: /finkbeiner/imaging/smb-robodata/Sina" size="70" />
+	<param name="output_path" type="text" format="text" label="Specify path for the output, where the new checkpoints will be saved in a subfolder called 'train'." value="/finkbeiner/imaging/smb-robodata/Sina/ServerTesting/Outputs" help="For example: /finkbeiner/imaging/smb-robodata/Sina/ServerTesting/Outputs" size="70" />
 
-	<param name="until_step" type="text" format ="text" label="Specify the final step of training you want the training to go on." value = "3" help="It will train for an additional steps till it reaches the number you specify!" size="70" />
+	<param name="until_step" type="text" format ="text" label="Specify the final step of training you want the training to go on." value = "1" help="It will train for an additional steps till it reaches the number you specify!" size="70" />
 
 </inputs>
 
