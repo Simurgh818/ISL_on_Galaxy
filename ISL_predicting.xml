@@ -3,11 +3,13 @@
     <description>This interface sends Unix commands to run In-Silico Labeling TensorFlow program
         (Christiansen et al 2018). There are two modes: Predicting and Training. This one is for Predicting.</description>
 
+
+
     <command>
         <!-- <command interpreter="bash"> -->
         <!-- /home/sinadabiri/venvs/tensorflow/SinaFlow/bin/activate
-        /home/sinadabiri/galaxy-neuron-analysis/galaxy
-         -->
+        /home/sinadabiri/galaxy-neuron-analysis/galaxy -->
+
 
         source /finkbeiner/imaging/home/fbgalaxy/.virtualenvs/insilico/bin/activate;
 
@@ -15,6 +17,7 @@
 
         python3.6 /finkbeiner/imaging/home/galaxy/tools/dev_staging_modules/ISL_predicting.py $infile
         $crop_size $model_location $output_path $dataset_eval_path $infer_channels $outfile;
+
 
         echo "End of Prediction";
     </command>

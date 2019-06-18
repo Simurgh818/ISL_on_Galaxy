@@ -14,7 +14,6 @@ INPUT_PATH = ''
 ROBO_NUMBER = None
 IMAGING_MODE = ''
 
-
 def image_feeder(dataset_training, valid_wells, valid_timepoints):
     temp_directory = os.path.join(output_path, 'temp_directory')
     if not os.path.exists(temp_directory):
@@ -73,6 +72,7 @@ def image_feeder(dataset_training, valid_wells, valid_timepoints):
 
     return temp_directory
 
+
 def main():
     """ First the script makes sure the Bazel has been shutdown properly. Then it starts the bazel command with the following arguments:
 
@@ -80,9 +80,7 @@ def main():
     dataset_train_path: Folder path to images directory to be used for training.
     model_location: Folder path to where the checkpoints of the ISL model is stored.
     output_path: Folder path to where the train subdirectory, that contains the checkpoints will be saved.
-    until_step: The upper step number limit for training.
-
-    """
+    until_step: The upper step number limit for training. """
 
     base_directory_path = 'cd ' + base_directory + '; '
 
@@ -100,7 +98,6 @@ def main():
             dataset_train_path_tp = str(os.path.join(dataset_train_path_w, tp))
 
             print("Dataset Train Path is: ", dataset_train_path_tp, '\n')
-
 
             date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
             # Running Bazel for prediction. Note txt log files are also being created
@@ -128,8 +125,7 @@ def main():
 
     cmd2 = ['tensorboard --logdir ' + base_directory]
     process2 = subprocess.Popen(cmd2, shell=True, stdout=subprocess.PIPE)
-    process2.kill()
-
+    process2.wait()
 
     # Here we delete the temp folder.
     print("temp_directory is going to be removed: ", temp_directory)
@@ -139,14 +135,11 @@ def main():
 
     print("Model checkpoints are written to:")
     print(output_path)
+
+    # Need to troubleshoot the link for TensorBoard
+    # print ("The Link to TensorBoard is:")
+    # print (output2)
     return
-
-# Need to troubleshoot the link for TensorBoard
-# print ("The Link to TensorBoard is:")
-# print (output2)
-
-# return output2
-
 
 if __name__ == '__main__':
     # Receiving the variables from the XML script, parse them, initialize them,

@@ -5,14 +5,16 @@
 	<command>
 		<!-- <command interpreter="bash"> -->
 		<!-- /home/sinadabiri/venvs/tensorflow/SinaFlow/bin/activate
-    /home/sinadabiri/galaxy-neuron-analysis/galaxy
-     -->
+    /home/sinadabiri/galaxy-neuron-analysis/galaxy -->
+
 
 		source /finkbeiner/imaging/home/fbgalaxy/.virtualenvs/insilico/bin/activate;
 
 		echo "Before Python";
 
+
 		python3.6 /finkbeiner/imaging/home/galaxy/tools/dev_staging_modules/ISL_training.py $infile $dataset_train_path $model_location $output_path $until_step $outfile;
+
 
 		echo "End of Training";
 	</command>

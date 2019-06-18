@@ -13,8 +13,7 @@ global temp_directory, tmp_location, dataset_prediction, VALID_WELLS, VALID_TIME
 INPUT_PATH = ''
 ROBO_NUMBER = None
 IMAGING_MODE = ''
-# loop_iterations_row = 0
-# loop_iterations_col = 0
+
 
 def image_feeder(dataset_prediction, valid_wells, valid_timepoints):
     temp_directory = os.path.join(output_path, 'temp_directory')
@@ -80,6 +79,7 @@ def image_feeder(dataset_prediction, valid_wells, valid_timepoints):
     return temp_directory, loop_iterations_col, loop_iterations_row
 
 
+
 def main():
     """ First the script makes sure the Bazel has been shutdown properly. Then it starts the bazel command with the following arguments:
 
@@ -88,11 +88,12 @@ def main():
     model_location: wheter the user wants to use the model that has been trained before in the program, or use their own trained model.
     output_path: The location where the folder (eval_eval_infer) containing the prediction image will be stored at.
     dataset_eval_path: The location where the images to be used for prediction are sotred at.
-    infer_channels: The microscope inference channels.
+    infer_channels: The microscope inference channels. """
 
-    """
 
     base_directory_path = 'cd ' + base_directory + '; '
+
+
 
     for w in VALID_WELLS:
         date_time = datetime.now().strftime("%m-%d-%Y_%H:%M")
@@ -101,6 +102,7 @@ def main():
         dataset_eval_path_w = str(os.path.join(temp_directory, w))
         print("dataset_eval_path_w is: ", dataset_eval_path_w, '\n')
         print('\n', 'The temp_directory subfolders are: ', os.listdir(dataset_eval_path_w), '\n')
+
 
         for tp in VALID_TIMEPOINTS:
 
@@ -161,7 +163,6 @@ def main():
     cmd3 = ['rm -r ' + temp_directory + ';']
     process3 = subprocess.Popen(cmd3, shell=True, stdout=subprocess.PIPE)
     process3.wait()
-
     return
 
 
@@ -209,6 +210,7 @@ if __name__ == '__main__':
     else:
         model_location = ''
         mod = 'Your-Model'
+
 
     temp_directory, loop_iterations_col, loop_iterations_row = \
         image_feeder(dataset_eval_path, VALID_WELLS, VALID_TIMEPOINTS)
